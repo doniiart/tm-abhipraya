@@ -11,6 +11,7 @@ use App\Models\SettingWeb;
 use App\Models\Galeri;
 use App\Http\Controllers\HumasController;
 use App\Http\Controllers\PengumumanController;
+use App\Http\Controllers\DansosController;
 
 Route::get('/', function () {
     $settings = SettingWeb::first();
@@ -101,5 +102,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/pengumuman/kirim', [PengumumanController::class, 'send'])->name('pengumuman.send');
 });
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dansos/pengeluaran', [DansosController::class, 'index'])->name('dansos.pengeluaran');
+    Route::post('/dansos/pengeluaran', [DansosController::class, 'store'])->name('dansos.pengeluaran.store');
+    Route::delete('/dansos/pengeluaran/{id}', [DansosController::class, 'destroy'])->name('dansos.pengeluaran.destroy');
+    Route::get('/dansos/talangan', [DansosController::class, 'talanganIndex'])->name('dansos.talangan');
+    Route::post('/dansos/talangan', [DansosController::class, 'talanganStore'])->name('dansos.talangan.store');
+    Route::delete('/dansos/talangan/{id}', [DansosController::class, 'talanganDestroy'])->name('dansos.talangan.destroy');
+});
 
 require __DIR__.'/auth.php';

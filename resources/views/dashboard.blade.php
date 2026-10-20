@@ -1,3 +1,24 @@
+@php
+    use Illuminate\Support\Facades\DB;
+
+    $bulanIni = \Carbon\Carbon::now()->format('Y-m');
+    
+    $pemasukanBulanIni = DB::table('iurans')->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanIni])->sum('dansos');
+    $pemasukanBulanKemarin = DB::table('iurans')->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') < ?", [$bulanIni])->sum(DB::raw('dansos + arisan'));
+
+    $pengeluaranList = DB::table('pengeluaran_dansos')
+        ->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanIni])
+        ->orderBy('tanggal', 'desc')
+        ->get();
+
+    $pengeluaranSakitTakziah = $pengeluaranList->sum('nominal'); 
+    $talanganTabungan = DB::table('talangan_dansos')
+        ->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanIni])
+        ->sum('nominal');
+
+    $totalSaldoDansos = ($pemasukanBulanKemarin + $pemasukanBulanIni) - $pengeluaranSakitTakziah + $talanganTabungan;
+@endphp
+
 <x-app-layout>
     <!-- Header Halaman -->
     <x-slot name="header">
@@ -47,7 +68,7 @@
             </div>
 
             <!-- BENTO GRID SYSTEM: Konten Dinamis Berdasarkan Role -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="max-w-3xl mx-auto flex flex-col gap-6">
 
                 {{-- ========================================== --}}
                 {{-- KHUSUS BENDAHARA                           --}}
@@ -72,19 +93,90 @@
                 {{-- KHUSUS DANSOS (DANA SOSIAL)                --}}
                 {{-- ========================================== --}}
                 @if(auth()->user()->hasRole('dansos') || auth()->user()->hasRole('super-admin'))
-                    <div class="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all">
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="bg-red-50 text-red-600 p-3 rounded-2xl">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
-                            </div>
-                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Dana Sosial</span>
-                        </div>
-                        <p class="text-gray-500 text-sm font-medium mb-1">Saldo Sosial</p>
-                        <h4 class="text-3xl font-black text-gray-900 mb-4">Rp 1.250.000</h4>
-                        <a href="{{ route('admin.settings.edit') }}" class="text-red-600 text-sm font-bold hover:text-red-800 flex items-center gap-1">
-                            Ubah Data Sosial <span aria-hidden="true">&rarr;</span>
-                        </a>
+                    <div class="bg-white rounded-[1.5rem] p-6 shadow-sm border border-slate-100 mb-4 relative overflow-hidden">
+                    <!-- Hiasan Background -->
+                    <div class="absolute top-0 right-0 p-8 opacity-5">
+                        <svg class="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                     </div>
+
+                    <div class="flex items-center justify-between mb-4 relative z-10">
+                        <div class="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center text-red-500 border border-red-100">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                            </svg>
+                        </div>
+                        <span class="text-[10px] font-bold text-slate-400 tracking-widest uppercase">Dana Sosial</span>
+                    </div>
+                    <div class="relative z-10">
+                        <p class="text-sm font-medium text-slate-500 mb-1">Total Saldo Dansos Tersisa</p>
+                        <h3 class="text-3xl font-black text-slate-800 tracking-tight">
+                            Rp {{ number_format($totalSaldoDansos, 0, ',', '.') }}
+                        </h3>
+                    </div>
+                </div>
+
+            <div class="flex flex-col gap-2">
+                <!-- GRID RINCIAN ARUS KAS DANSOS -->
+                <div class="grid grid-cols-2 gap-3">
+                    
+                    <!-- Kartu 1: Bulan Kemarin -->
+                    <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-100 shadow-sm">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Bulan Kemarin</span>
+                        </div>
+                        <p class="text-[10px] text-slate-400 mb-1 line-clamp-1">Total Dansos + Arisan</p>
+                        <h4 class="text-sm sm:text-base font-bold text-slate-800">
+                            Rp {{ number_format($pemasukanBulanKemarin, 0, ',', '.') }}
+                        </h4>
+                    </div>
+
+                    <!-- Kartu 2: Pemasukan Bulan Ini -->
+                    <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-100 shadow-sm">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="w-6 h-6 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                            </div>
+                            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Bulan Ini</span>
+                        </div>
+                        <p class="text-[10px] text-slate-400 mb-1 line-clamp-1">Setoran kedua Humas</p>
+                        <h4 class="text-sm sm:text-base font-bold text-emerald-600">
+                            + Rp {{ number_format($pemasukanBulanIni, 0, ',', '.') }}
+                        </h4>
+                    </div>
+
+                    <!-- Kartu 3: Pengeluaran Sakit & Takziah -->
+                    <a href="{{ url('/dansos/pengeluaran') }}" class="block bg-white rounded-2xl p-4 sm:p-5 border border-slate-100 shadow-sm hover:border-red-300 hover:shadow-md transition-all duration-200 group cursor-pointer">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="w-6 h-6 rounded-full bg-red-50 flex items-center justify-center text-red-500 group-hover:bg-red-500 group-hover:text-white transition-colors">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                            </div>
+                            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Pengeluaran</span>
+                        </div>
+                        <p class="text-[10px] text-slate-400 mb-1 line-clamp-1">Klik untuk kelola data</p>
+                        <h4 class="text-sm sm:text-base font-bold text-red-500">
+                            - Rp {{ number_format($pengeluaranSakitTakziah, 0, ',', '.') }}
+                        </h4>
+                    </a>
+
+                    <!-- Kartu 4: Dana Talangan / Tabungan -->
+                    <a href="{{ route('dansos.talangan') }}" class="block bg-white rounded-2xl p-4 sm:p-5 border border-slate-100 shadow-sm hover:border-amber-300 hover:shadow-md transition-all duration-200 group cursor-pointer">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="w-6 h-6 rounded-full bg-amber-50 flex items-center justify-center text-amber-500 group-hover:bg-amber-500 group-hover:text-white transition-colors">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                            </div>
+                            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Talangan</span>
+                        </div>
+                        <p class="text-[10px] text-slate-400 mb-1 line-clamp-1">Klik untuk kelola data</p>
+                        <h4 class="text-sm sm:text-base font-bold text-slate-800">
+                            Rp {{ number_format($talanganTabungan, 0, ',', '.') }}
+                        </h4>
+                    </a>
+
+                </div>
+                
                 @endif
 
                 {{-- ========================================== --}}
@@ -153,7 +245,7 @@
                     </div>
                     @endif
 
-                    <div class="w-full flex justify-start mb-4">
+                    <div class="w-full flex justify-start">
                         <div class="bg-white rounded-[2rem] p-7 shadow-sm border border-slate-100 w-full max-w-xs">
                             <div class="flex justify-between items-center mb-6">
                                 <div class="bg-yellow-100 text-yellow-700 p-3 rounded-2xl">
@@ -168,6 +260,33 @@
                             </a>
                         </div>
                     </div>`
+                @endif
+
+                @if(auth()->user()->hasRole('dansos'))
+                <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-red-500"></div>
+                            Riwayat Pengeluaran Bulan Ini
+                        </h4>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        @foreach($pengeluaranList as $item)
+                        <div class="flex justify-between items-center text-sm border-b border-slate-50 pb-3 last:border-0 last:pb-0">
+                            <span class="text-slate-600 flex flex-col sm:flex-row sm:gap-1">
+                                <span class="font-semibold text-slate-700">
+                                    {{ $item->jenis == 'Sakit' ? 'Menjenguk' : 'Takziah ke' }}
+                                </span> 
+                                <span class="text-slate-500">{{ $item->keterangan }}</span>
+                            </span>
+                            <span class="font-bold text-red-500 bg-red-50 px-2 py-1 rounded-lg text-xs whitespace-nowrap">
+                                - Rp {{ number_format($item->nominal, 0, ',', '.') }}
+                            </span>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
                 @endif
 
 
@@ -193,6 +312,7 @@
                 {{-- UNTUK SEMUA (ANGGOTA & PENGURUS)           --}}
                 {{-- WIDGET JADWAL KUMPULAN                     --}}
                 {{-- ========================================== --}}
+                
                 <div class="md:col-span-2 lg:col-span-2 bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 relative overflow-hidden">
                     <div class="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-gray-50 to-transparent pointer-events-none"></div>
                     

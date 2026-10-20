@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Anggota;
 use App\Models\Iuran;
@@ -14,12 +15,42 @@ class HumasController extends Controller
         // Ambil data anggota berdasarkan RT
        $anggotaRT23 = \App\Models\Anggota::where('rt', '23')->get();
         $anggotaRT24 = \App\Models\Anggota::where('rt', '24')->get();
-        
-        // 1. TAMBAHKAN BARIS INI UNTUK MENGAMBIL DATA AGENDA
+
+        // 1. Ambil data agenda
         $agendas = \App\Models\MeetingAgenda::orderBy('tanggal', 'desc')->get();
 
-        // 2. TAMBAHKAN 'agendas' DI DALAM COMPACT
-       return view('dashboard', compact('anggotaRT23', 'anggotaRT24', 'agendas'));
+        // --- HITUNG KEUANGAN DANSOS ---
+        // Pemasukan Bulan Ini (Misal: Bulan Oktober 2026 atau bulan berjalan)
+        $bulanIni = \Carbon\Carbon::now()->format('Y-m');
+        
+        // Total dansos bulan ini dari semua setoran
+        $pemasukanBulanIni = \App\Models\Iuran::whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanIni])
+            ->sum('dansos');
+
+        // Total bulan kemarin (akumulasi sebelum bulan ini)
+        $pemasukanBulanKemarin = \App\Models\Iuran::whereRaw("DATE_FORMAT(tanggal, '%Y-%m') < ?", [$bulanIni])
+            ->sum(DB::raw('dansos + arisan')); // Sesuai permintaan: total dansos + arisan bulan kemarin
+
+        // Pengeluaran (Contoh statis atau bisa diambil dari tabel pengeluaran jika sudah ada)
+        $pengeluaranSakitTakziah = 100000; 
+        $talanganTabungan = 0;
+
+        // Total Saldo Dansos Tersisa
+        // Rumus: (Bulan Kemarin + Pemasukan Bulan Ini) - Pengeluaran + Talangan
+        $totalSaldoDansos = ($pemasukanBulanKemarin + $pemasukanBulanIni) - $pengeluaranSakitTakziah + $talanganTabungan;
+        // -----------------------------
+
+        // 2. TAMBAHKAN VARIABEL KEUANGAN KE DALAM COMPACT
+        return view('dashboard', compact(
+            'anggotaRT23', 
+            'anggotaRT24', 
+            'agendas', 
+            'pemasukanBulanKemarin', 
+            'pemasukanBulanIni', 
+            'pengeluaranSakitTakziah', 
+            'talanganTabungan', 
+            'totalSaldoDansos'
+        ));
     }
 
     public function storeIuran(Request $request)

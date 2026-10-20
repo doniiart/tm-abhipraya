@@ -15,7 +15,7 @@ class DemoUserSeeder extends Seeder
         $akunDemos = [
             ['name' => 'Mas Humas', 'email' => 'humas@demo.com', 'role' => 'humas'],
             ['name' => 'Mbak Bendahara', 'email' => 'bendahara@demo.com', 'role' => 'bendahara'],
-            ['name' => 'Kang Dansos', 'email' => 'dansos@demo.com', 'role' => 'dansos'],
+            ['name' => 'Mbak Dansos', 'email' => 'dansos@demo.com', 'role' => 'dansos'],
             ['name' => 'Pak TU', 'email' => 'tu@demo.com', 'role' => 'tata-usaha'],
             ['name' => 'Anggota Biasa', 'email' => 'anggota@demo.com', 'role' => 'anggota'],
         ];
