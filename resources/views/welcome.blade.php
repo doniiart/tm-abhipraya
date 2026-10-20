@@ -140,7 +140,7 @@
 <!-- Baris 2: Laporan Keuangan & Administrasi -->
 <!-- Grid Menu Utama yang Dinamis & Hidup -->
 <!-- Grid Menu Utama (Responsif & Interaktif Halus) -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mt-6">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-6">
     
     <!-- Kartu 1: Humas (Aktif / Bisa Diklik) -->
     <a href="{{ route('laporan.humas') }}" class="group bg-white rounded-xl p-5 sm:p-6 border border-gray-100 shadow-sm hover:border-slate-300 hover:shadow-md active:scale-[0.98] transition-all duration-200 block">
@@ -193,6 +193,18 @@
         <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mt-0.5">Laporan Bendahara</p>
         <p class="text-[11px] text-gray-400 mt-3 pt-3 border-t border-gray-50">Kas Muda, Kas Tua, Tabungan</p>
     </div>
+
+    <!-- Kartu 5: Persewaan -->
+            <div class="bg-white rounded-xl p-5 sm:p-6 border border-gray-100 shadow-sm hover:border-gray-300 hover:shadow-md transition-all duration-200">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center text-gray-700 font-semibold text-sm">
+                        ⛺
+                    </div>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 tracking-tight">Persewaan</h3>
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mt-0.5">Laporan Persewaan</p>
+                <p class="text-[11px] text-gray-400 mt-3 pt-3 border-t border-gray-50">Sewa tenda, kursi, & peralatan</p>
+            </div>
 
 </div>
 

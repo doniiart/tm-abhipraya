@@ -3,13 +3,19 @@
     <!-- HEADER MODERN -->
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-            <div>
-                <h2 class="font-extrabold text-2xl text-slate-900 tracking-tight">
-                    Profil Organisasi
-                </h2>
-                <p class="text-sm text-slate-500 mt-1">
-                    Mengenal lebih dekat Karang Taruna Tunas Muda Abhipraya
-                </p>
+            <div class="flex items-start justify-between mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Profil Organisasi</h2>
+                    <p class="text-sm text-gray-500 mt-1">Mengenal lebih dekat Karang Taruna Tunas Muda Abhipraya</p>
+                </div>
+
+                <!-- TOMBOL TEKS DIPLOMASI (Letaknya di Kanan) -->
+                <button onclick="bukaModalDiplomasi()" title="Teks Diplomasi" class="p-2.5 bg-white border border-gray-200 rounded-xl shadow-sm hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all group">
+                    <!-- Ikon Kertas -->
+                    <svg class="w-6 h-6 text-gray-500 group-hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </button>
             </div>
             
             <!-- Tombol Kembali -->
@@ -117,4 +123,105 @@
 
         </div>
     </div>
+
+        <div id="modal-container" class="fixed inset-0 z-[99] hidden items-center justify-center px-4">
+    <!-- Latar Belakang Blur dengan Animasi Fading -->
+    <div id="modal-backdrop" class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm opacity-0 transition-opacity duration-300 ease-out" onclick="tutupModalDiplomasi()"></div>
+    
+    <!-- Kartu Teks Diplomasi dengan Animasi Scale (Membesar) -->
+    <div id="modal-card" class="relative bg-white w-full max-w-lg rounded-[2rem] shadow-2xl p-6 sm:p-8 transform scale-95 opacity-0 transition-all duration-300 ease-out flex flex-col max-h-[90vh]">
+        
+        <!-- Tombol Silang (X) Interaktif (Berputar saat di-hover) -->
+        <button onclick="tutupModalDiplomasi()" class="absolute top-6 right-6 text-slate-400 hover:text-red-500 bg-slate-50 hover:bg-red-50 rounded-full p-2 transition-all duration-300 hover:rotate-90">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+
+        <!-- Header Elegan dengan Gradasi -->
+        <div class="flex items-center gap-4 mb-6">
+            <div class="p-3 bg-gradient-to-br from-red-50 to-red-100 rounded-2xl text-red-600 shadow-inner">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+            </div>
+            <div>
+                <h3 class="text-2xl font-black text-slate-800 tracking-tight">Teks Diplomasi</h3>
+                <p class="text-sm font-medium text-slate-500 mt-0.5">Dokumen Resmi Karang Taruna</p>
+            </div>
+        </div>
+        
+        <!-- Garis Pembatas Tipis -->
+        <div class="w-full h-px bg-gradient-to-r from-slate-100 via-slate-200 to-transparent mb-6"></div>
+        
+        <!-- Isi Teks (Scrollable, Rapi, Teks Justify) -->
+        <div class="text-slate-600 text-[15px] leading-relaxed overflow-y-auto pr-3 flex-1">
+            <p class="mb-5 text-justify">
+                 Assalamualaikum Wr. Wb. Keparing matur dumateng poro tamu sedoyo, gegandengan kadang kaniman sampun cekap anggenipun ngladosaken unjukan soho nyamikan sampun cekap lan sampun sumadyo ing ngarsanipun panjenengan sami awet keparingipun <span class="font-bold text-slate-800">Mas/Mba (yang punya rumah)</span> kawulo suwun <span class="font-bold text-slate-800">Bapak (yang paling tua)</span> nyumangga aken poro tamu sedoyo,
+                wedal pangandikan ipun sak cekap ipun mbok menawi wonten klenta klentu kawulo, kulo nyuwun pangapunten Wassalamualaikum Wr. Wb.
+            </p>
+            
+        </div>
+        
+        <!-- Tombol Tutup Elegan -->
+        <div class="mt-8 pt-2 flex flex-col-reverse sm:flex-row items-center justify-end gap-3">
+            
+            <!-- Tombol Tutup (Diubah warnanya agar lebih netral) -->
+            <button onclick="tutupModalDiplomasi()" class="w-full sm:w-auto px-6 py-3 text-slate-500 hover:text-slate-800 font-bold rounded-2xl hover:bg-slate-100 transition-all duration-300 text-sm">
+                Tutup Dokumen
+            </button>
+
+            <!-- Tombol Download JPEG -->
+            <a href="{{ asset('/images/teks-diplomasi.jpg') }}" download="teks-diplomasi.jpg" class="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-red-600 to-red-500 text-white font-bold rounded-2xl shadow-lg shadow-red-200 hover:shadow-red-300 hover:-translate-y-0.5 transition-all duration-300 text-sm flex items-center justify-center gap-2">
+                <!-- Ikon Download -->
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                </svg>
+                Unduh Gambar
+            </a>
+
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPT UNTUK ANIMASI MUNCUL/HILANG YANG HALUS -->
+<script>
+    function bukaModalDiplomasi() {
+        let container = document.getElementById('modal-container');
+        let backdrop = document.getElementById('modal-backdrop');
+        let card = document.getElementById('modal-card');
+        
+        // Tampilkan wadah utama
+        container.classList.remove('hidden');
+        container.classList.add('flex');
+        
+        // Jeda sangat singkat (10ms) agar browser merender animasi CSS-nya
+        setTimeout(() => {
+            backdrop.classList.remove('opacity-0');
+            backdrop.classList.add('opacity-100');
+            
+            card.classList.remove('opacity-0', 'scale-95');
+            card.classList.add('opacity-100', 'scale-100');
+        }, 10);
+    }
+
+    function tutupModalDiplomasi() {
+        let container = document.getElementById('modal-container');
+        let backdrop = document.getElementById('modal-backdrop');
+        let card = document.getElementById('modal-card');
+        
+        // Putar animasi mundur (menghilang & mengecil)
+        backdrop.classList.remove('opacity-100');
+        backdrop.classList.add('opacity-0');
+        
+        card.classList.remove('opacity-100', 'scale-100');
+        card.classList.add('opacity-0', 'scale-95');
+        
+        // Sembunyikan wadah sepenuhnya setelah durasi animasi selesai (300ms)
+        setTimeout(() => {
+            container.classList.remove('flex');
+            container.classList.add('hidden');
+        }, 300);
+    }
+</script>
 </x-app-layout>
