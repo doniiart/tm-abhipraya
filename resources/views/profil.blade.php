@@ -71,8 +71,8 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.243-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                     </div>
                     <div class="text-xs font-bold tracking-widest text-slate-400 uppercase mb-1">Pusat Kesekretariatan</div>
-                    <div class="text-sm font-extrabold text-slate-800 leading-snug">Dk. Gunung Rejo & Candi</div>
-                    <div class="text-xs text-slate-500 mt-1">RT 23 & RT 24, Klaten</div>
+                    <div class="text-sm font-extrabold text-slate-800 leading-snug">Dk. Candi Rejo & Gunung Rejo</div>
+                    <div class="text-xs text-slate-500 mt-1">RT 23 & RT 24, Wonosari,Klaten</div>
                 </div>
 
                 <!-- Info Jumlah Anggota -->

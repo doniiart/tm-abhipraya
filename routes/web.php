@@ -85,7 +85,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Rute khusus Galeri - Hanya Ketua, Bendahara, Dansos, dan Anggota
-Route::middleware(['auth', 'role:ketua|bendahara|dansos|anggota'])->group(function () {
+Route::middleware(['auth', 'role:ketua,bendahara,dansos'])->group(function () {
     Route::get('/galeri', [App\Http\Controllers\GaleriController::class, 'index'])->name('galeri.index');
     Route::post('/galeri', [App\Http\Controllers\GaleriController::class, 'store'])->name('galeri.store');
     Route::delete('/galeri/{galeri}', [App\Http\Controllers\GaleriController::class, 'destroy'])->name('galeri.destroy');
@@ -95,6 +95,7 @@ Route::get('/humas/manajemen', [HumasController::class, 'index'])->name('humas.i
 Route::post('/humas/iuran', [HumasController::class, 'storeIuran'])->name('humas.iuran.store');
 Route::get('/laporan/humas', [HumasController::class, 'publicReport'])->name('laporan.humas');
 Route::get('/laporan/humas/riwayat', [\App\Http\Controllers\HumasController::class, 'riwayatArisan'])->name('humas.riwayat');
+Route::get('/laporan/dansos', [App\Http\Controllers\DansosController::class, 'laporanPublik'])->name('laporan.dansos');
 
 
 Route::middleware(['auth'])->group(function () {

@@ -7,10 +7,10 @@
                 <div>
                     <span class="text-xs font-bold tracking-widest text-slate-400 uppercase">Transparansi Organisasi</span>
                     <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mt-1">Laporan Resmi Humas</h1>
-                    <p class="text-sm text-slate-500 mt-1">Rekapitulasi iuran dan kas pemuda Tunas Muda Abhipraya Candi Rejo & .</p>
+                    <p class="text-sm text-slate-500 mt-1">Rekapitulasi iuran dan kas pemuda Tunas Muda Abhipraya Candi Rejo & Gunung Rejo</p>
                 </div>
                 <!-- Tombol Kembali ke Dashboard Utama (Beranda) -->
-            <a href="{{ url('/') }}" class="inline-flex items-center justify-center px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 hover:border-slate-300 hover:shadow-sm transition-all group">
+            <a href="{{ url('/') }}#bagian-laporan" class="inline-flex items-center justify-center px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 hover:border-slate-300 hover:shadow-sm transition-all group">
                 <svg class="w-4 h-4 mr-1.5 text-slate-400 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                 Kembali ke Dashboard Utama
             </a>
@@ -100,9 +100,25 @@
                                 <td colspan="5" class="py-8 text-center text-slate-400 text-xs">Belum ada data riwayat iuran untuk RT 23.</td>
                             </tr>
                             @endforelse
+
+                            <!-- Baris Total -->
+                            <tr class="bg-slate-50 font-bold border-t-2 border-slate-200">
+                                <td colspan="2" class="py-4 px-6 text-right text-xs uppercase tracking-wider text-slate-600">
+                                    Total Keseluruhan
+                                </td>
+                                <td class="py-4 px-6 text-sm text-slate-800">
+                                    Rp {{ number_format($iuranRT23->sum('arisan'), 0, ',', '.') }}
+                                </td>
+                                <td class="py-4 px-6 text-sm text-slate-800">
+                                    Rp {{ number_format($iuranRT23->sum('tabungan'), 0, ',', '.') }}
+                                </td>
+                                <td class="py-4 px-6 text-sm text-slate-800">
+                                    Rp {{ number_format($iuranRT23->sum('dansos'), 0, ',', '.') }}
+                                </td>
+                            </tr>
+                        </div>
                         </tbody>
                     </table>
-                </div>
 
                 <!-- Tabel RT 24 -->
                 <div x-show="activeTab === 'rt24'" class="mt-6 overflow-x-auto" style="display: none;">
@@ -130,6 +146,22 @@
                                 <td colspan="5" class="py-8 text-center text-slate-400 text-xs">Belum ada data riwayat iuran untuk RT 24.</td>
                             </tr>
                             @endforelse
+
+                            <tr class="bg-slate-50 font-bold border-t-2 border-slate-200">
+                                <td colspan="2" class="py-4 px-6 text-right text-xs uppercase tracking-wider text-slate-600">
+                                    Total Keseluruhan
+                                </td>
+                                <td class="py-4 px-6 text-sm text-slate-800">
+                                    <!-- Ubah $riwayats dengan nama variabel yang Mas Doni pakai di perulangan foreach -->
+                                    Rp {{ number_format($iuranRT24->sum('arisan'), 0, ',', '.') }}
+                                </td>
+                                <td class="py-4 px-6 text-sm text-slate-800">
+                                    Rp {{ number_format($iuranRT24->sum('tabungan'), 0, ',', '.') }}
+                                </td>
+                                <td class="py-4 px-6 text-sm text-slate-800">
+                                    Rp {{ number_format($iuranRT24->sum('dansos'), 0, ',', '.') }}
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

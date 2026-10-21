@@ -245,8 +245,8 @@
                     </div>
                     @endif
 
-                    <div class="w-full flex justify-start">
-                        <div class="bg-white rounded-[2rem] p-7 shadow-sm border border-slate-100 w-full max-w-xs">
+                    <div class="w-full">
+                        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 w-full">
                             <div class="flex justify-between items-center mb-6">
                                 <div class="bg-yellow-100 text-yellow-700 p-3 rounded-2xl">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
@@ -259,7 +259,7 @@
                                 Buat Pengumuman <span aria-hidden="true">&rarr;</span>
                             </a>
                         </div>
-                    </div>`
+                    </div>
                 @endif
 
                 @if(auth()->user()->hasRole('dansos'))
@@ -313,17 +313,17 @@
                 {{-- WIDGET JADWAL KUMPULAN                     --}}
                 {{-- ========================================== --}}
                 
-                <div class="md:col-span-2 lg:col-span-2 bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 relative overflow-hidden">
+                <div class="md:col-span-2 lg:col-span-2 bg-white rounded-2xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 relative overflow-hidden mb-4">
                     <div class="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-gray-50 to-transparent pointer-events-none"></div>
                     
                     <div class="flex items-center gap-3 mb-6">
-                        <div class="bg-red-100 p-2 rounded-xl text-red-600">
+                        <div class="flex items-center gap-3 mb-4">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                         </div>
                         <h3 class="text-lg font-black text-gray-900">Agenda Terdekat</h3>
                     </div>
 
-                    <div class="flex flex-col md:flex-row gap-6 items-start md:items-center">
+                    <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
                         <div class="text-center bg-gray-50 rounded-xl p-4 border border-gray-100 min-w-[80px]">
                             <div class="text-2xl font-bold text-gray-900">{{ $settings->agenda_tanggal ?? '00' }}</div>
                             <div class="text-xs font-semibold text-red-600 uppercase">{{ $settings->agenda_bulan ?? '...' }}</div>
@@ -333,9 +333,11 @@
                             <p class="text-sm text-gray-500 mt-1">{{ $settings->agenda_waktu ?? '-' }} • {{ $settings->agenda_lokasi ?? '-' }}</p>
                             
                             <!-- Tombol Ubah (sesuaikan route jika berbeda) -->
-                           <a href="{{ route('admin.settings.edit') }}" class="inline-block mt-3 px-4 py-2 bg-gray-900 text-white text-xm font-bold rounded-lg hover:bg-red-600 transition-colors">
-                                Ubah Jadwal Rapat
-                            </a>
+                           @if(auth()->user()->hasRole('super-admin') || auth()->user()->hasRole('humas'))
+                                <a href="{{ route('admin.settings.edit') }}#agenda-form" class="inline-block mt-3 px-4 py-2 bg-gray-900 text-white text-sm font-bold rounded-lg hover:bg-gray-800 transition-colors">
+                                    Ubah Jadwal Rapat
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </div>

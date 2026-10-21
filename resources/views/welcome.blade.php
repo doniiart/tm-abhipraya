@@ -123,7 +123,7 @@
 
     <!-- Baris 2: Laporan Keuangan & Administrasi -->
     <!-- Baris 1: Statistik Umum (Anggota & Sosial) -->
-    <div class="grid grid-cols-2 gap-4 mt-8">
+    <div id="bagian-laporan" class="grid grid-cols-2 gap-4 mt-8">
         <!-- Kotak: Anggota Aktif -->
         <a href="{{ route('anggota.index') }}" class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center hover:shadow-md transition-shadow">
             <h3 class="text-3xl font-extrabold text-red-600 mb-1">{{ $settings->stat_anggota ?? '60+' }}</h3>
@@ -171,16 +171,23 @@
     </div>
 
     <!-- Kartu 3: Dansos -->
-    <div class="bg-white rounded-xl p-5 sm:p-6 border border-gray-100 shadow-sm hover:border-gray-300 hover:shadow-md transition-all duration-200">
-        <div class="flex items-center justify-between mb-4">
-            <div class="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center text-gray-700 font-semibold text-sm">
+        <a href="{{ url('/laporan/dansos') }}" class="block bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md hover:border-amber-200 transition-all relative group cursor-pointer">
+            
+            <!-- Tulisan Buka -> di pojok kanan atas -->
+            <div class="absolute top-6 right-6 text-xs text-slate-400 group-hover:text-amber-600 transition-colors flex items-center gap-1">
+                Buka <span aria-hidden="true">&rarr;</span>
+            </div>
+
+            <!-- Ikon -->
+            <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-500 mb-4 border border-amber-100">
                 🤝
             </div>
-        </div>
-        <h3 class="text-xl font-bold text-gray-900 tracking-tight">Dansos</h3>
-        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mt-0.5">Laporan Dansos</p>
-        <p class="text-[11px] text-gray-400 mt-3 pt-3 border-t border-gray-50">Dana sosial & kemasyarakatan</p>
-    </div>
+            
+            <!-- Judul & Deskripsi -->
+            <h3 class="font-bold text-slate-800 text-lg mb-1">Dansos</h3>
+            <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-4">Laporan Dansos</p>
+            <p class="text-xs text-slate-400">Dana sosial & kemasyarakatan</p>
+        </a>
 
     <!-- Kartu 4: Bendahara -->
     <div class="bg-white rounded-xl p-5 sm:p-6 border border-gray-100 shadow-sm hover:border-gray-300 hover:shadow-md transition-all duration-200">
