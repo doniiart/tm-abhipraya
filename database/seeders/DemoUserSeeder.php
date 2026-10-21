@@ -22,12 +22,14 @@ class DemoUserSeeder extends Seeder
 
         // 2. Proses pembuatan akun satu per satu
         foreach ($akunDemos as $akun) {
-            $user = User::create([
-                'name' => $akun['name'],
-                'email' => $akun['email'],
-                'password' => Hash::make('password123'), // Password semua akun demo sama: password123
-                'phone' => '08111222333',
-            ]);
+            $user = User::updateOrCreate(
+                ['email' => $akun['email']], // Syarat pencarian (Cari email ini)
+                [
+                    'name' => $akun['name'],
+                    'password' => Hash::make('password123'), // Paksa reset/update password ke password123
+                    'phone' => '08111222333',
+                ]
+            );
 
             // 3. Cari jabatan/role di database, lalu tempelkan ke akun tersebut
             $role = Role::where('slug', $akun['role'])->first();

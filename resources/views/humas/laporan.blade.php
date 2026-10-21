@@ -66,7 +66,7 @@
                                 class="px-4 py-2 rounded-lg text-xs transition-all">
                             RT 23
                         </button>
-                        <button @click="activeTab = 'rt24'" 
+                        <button @click="activeTab = 'rt24'"
                                 :class="{ 'bg-white text-slate-900 shadow-xs font-semibold': activeTab === 'rt24', 'text-slate-600 hover:text-slate-900 font-medium': activeTab !== 'rt24' }" 
                                 class="px-4 py-2 rounded-lg text-xs transition-all">
                             RT 24
@@ -127,20 +127,30 @@
                                     Rp {{ number_format($iuranRT23->sum('dansos'), 0, ',', '.') }}
                                 </td>
                             </tr>
-                        </div>
                         </tbody>
                     </table>
+                    </div>
 
                 <!-- Tabel RT 24 -->
-                <div x-show="activeTab === 'rt24'" class="mt-6 overflow-x-auto" style="display: none;">
+                <div x-show="activeTab === 'rt24'" class="mt-6 overflow-x-auto">
                     <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="border-b border-slate-100 text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
-                                <th class="py-3 px-4">Tanggal</th>
-                                <th class="py-3 px-4">Nama Pemuda</th>
-                                <th class="py-3 px-4">Arisan</th>
-                                <th class="py-3 px-4">Tabungan</th>
-                                <th class="py-3 px-4">Dansos</th>
+                        <thead class="bg-gradient-to-r from-orange-100 to-amber-50 border-y border-orange-100">
+                            <tr>
+                                <th scope="col" class="py-4 px-6 text-left text-xs font-extrabold text-slate-800 uppercase tracking-wider">
+                                    Tanggal
+                                </th>
+                                <th scope="col" class="py-4 px-6 text-left text-xs font-extrabold text-slate-800 uppercase tracking-wider">
+                                    Nama Pemuda
+                                </th>
+                                <th scope="col" class="py-4 px-6 text-left text-xs font-extrabold text-slate-800 uppercase tracking-wider">
+                                    Arisan
+                                </th>
+                                <th scope="col" class="py-4 px-6 text-left text-xs font-extrabold text-slate-800 uppercase tracking-wider">
+                                    Tabungan
+                                </th>
+                                <th scope="col" class="py-4 px-6 text-left text-xs font-extrabold text-slate-800 uppercase tracking-wider">
+                                    Dansos
+                                </th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-50 text-sm">

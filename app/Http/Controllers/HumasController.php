@@ -109,12 +109,14 @@ class HumasController extends Controller
 {
     // Ambil rekapitulasi iuran untuk RT 23
     $iuranRT23 = \App\Models\Iuran::with('anggota')
+        ->where('status_riwayat', 'aktif')
         ->whereHas('anggota', function($q) {
             $q->where('rt', '23');
         })->get();
 
     // Ambil rekapitulasi iuran untuk RT 24
     $iuranRT24 = \App\Models\Iuran::with('anggota')
+        ->where('status_riwayat', 'aktif')
         ->whereHas('anggota', function($q) {
             $q->where('rt', '24');
         })->get();
@@ -139,4 +141,13 @@ class HumasController extends Controller
 
         return view('humas.riwayat', compact('riwayat'));
     }
+
+    public function arsipkanKumpulan()
+{
+    // Mengubah semua data iuran yang masih 'aktif' menjadi 'arsip'
+    \App\Models\Iuran::where('status_riwayat', 'aktif')
+                     ->update(['status_riwayat' => 'arsip']);
+
+    return back()->with('success', 'Data iuran pertemuan sebelumnya berhasil diarsipkan! Halaman utama telah direset.');
+}
 }

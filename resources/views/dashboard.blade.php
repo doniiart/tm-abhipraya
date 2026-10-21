@@ -74,21 +74,11 @@
                 {{-- KHUSUS BENDAHARA                           --}}
                 {{-- ========================================== --}}
                 @if(auth()->user()->hasRole('bendahara') || auth()->user()->hasRole('super-admin'))
-                    <div class="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all">
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="bg-slate-100 text-slate-900 p-3 rounded-2xl">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            </div>
-                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Kas Umum</span>
-                        </div>
-                        <p class="text-gray-500 text-sm font-medium mb-1">Saldo Tersedia</p>
-                        <h4 class="text-3xl font-black text-gray-900 mb-4">Rp 4.500.000</h4>
-                        <a href="{{ route('admin.settings.edit') }}" class="text-slate-900 text-sm font-bold hover:text-red-700 flex items-center gap-1">
-                            Ubah Angka Kas <span aria-hidden="true">&rarr;</span>
-                        </a>
-                    </div>
-                @endif
 
+                    <!-- Panggil file dashboard bendahara yang terpisah -->
+                    @include('bendahara.dashboard')
+
+                @endif
                 {{-- ========================================== --}}
                 {{-- KHUSUS DANSOS (DANA SOSIAL)                --}}
                 {{-- ========================================== --}}
@@ -405,6 +395,69 @@
         <div>
             <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">Manajemen Iuran Kumpulan</h2>
             <p class="text-sm text-gray-500 mt-1">Centang pemuda yang sudah asok iuran.</p>
+            <div x-data="{ showModalArsip: false }">
+                
+                <!-- Form Utama (Hilangkan onsubmit bawaan) -->
+                <form id="form-arsip" action="{{ route('humas.arsipkan') }}" method="POST">
+                    @csrf
+                    <!-- Tombol ini sekarang hanya memicu modal, bukan langsung submit -->
+                    <button type="button" @click="showModalArsip = true" class="inline-flex items-center gap-2 px-6 py-3 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white font-extrabold text-sm rounded-xl transition-all duration-300 shadow-sm border border-red-100 hover:border-red-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
+                        Selesai & Arsipkan Kumpulan Ini
+                    </button>
+                </form>
+
+                <!-- MODAL KONFIRMASI ESTETIK -->
+                <div x-show="showModalArsip" style="display: none;" class="fixed inset-0 z-[100] flex items-center justify-center px-4">
+                    
+                    <!-- Backdrop Gelap dengan Efek Kaca (Blur) -->
+                    <div x-show="showModalArsip" 
+                        x-transition:enter="ease-out duration-300"
+                        x-transition:enter-start="opacity-0"
+                        x-transition:enter-end="opacity-100"
+                        x-transition:leave="ease-in duration-200"
+                        x-transition:leave-start="opacity-100"
+                        x-transition:leave-end="opacity-0"
+                        @click="showModalArsip = false"
+                        class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
+                        
+                    <!-- Kotak Modal Utama -->
+                    <div x-show="showModalArsip" 
+                        x-transition:enter="ease-out duration-300"
+                        x-transition:enter-start="opacity-0 translate-y-8 sm:translate-y-0 sm:scale-95"
+                        x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                        x-transition:leave="ease-in duration-200"
+                        x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                        x-transition:leave-end="opacity-0 translate-y-8 sm:translate-y-0 sm:scale-95"
+                        class="relative bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full mx-auto overflow-hidden border border-slate-100">
+                        
+                        <div class="flex flex-col items-center text-center">
+                            <!-- Ikon Peringatan (Merah Elegan) -->
+                            <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-5 text-red-500 shadow-inner">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                </svg>
+                            </div>
+                            
+                            <h3 class="text-xl font-black text-slate-800 mb-2">Tutup Buku Kumpulan?</h3>
+                            <p class="text-sm text-slate-500 font-medium mb-8 leading-relaxed">
+                                Data iuran bulan sebelumnya akan dipindah ke halaman Riwayat. Halaman depan akan <b>direset menjadi Rp 0</b>. Anda yakin?
+                            </p>
+                            
+                            <div class="flex gap-3 w-full">
+                                <!-- Tombol Batal -->
+                                <button type="button" @click="showModalArsip = false" class="flex-1 py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-2xl transition-colors">
+                                    Batal
+                                </button>
+                                <!-- Tombol Eksekusi Submit (Menggunakan $refs.formArsip.submit()) -->
+                                <button type="button" onclick="document.getElementById('form-arsip').submit();" class="flex-1 py-3 px-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl transition-all shadow-[0_8px_20px_rgba(220,38,38,0.25)] hover:-translate-y-0.5">
+                                    Ya, Arsipkan
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         
         <!-- Navigasi Tab RT -->

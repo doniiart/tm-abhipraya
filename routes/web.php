@@ -72,6 +72,14 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'role:bendahara'])->prefix('admin')->group(function () {
     Route::get('/keuangan', [FinanceController::class, 'index'])->name('finance.index');
     Route::post('/keuangan', [FinanceController::class, 'store'])->name('finance.store');
+    Route::get('/tabungan', function () {
+        // Ambil data iuran yang kolom tabungannya lebih dari 0, urutkan dari yang terbaru
+        $riwayatTabungan = \App\Models\Iuran::where('tabungan', '>', 0)
+                            ->orderBy('tanggal', 'desc')
+                            ->get();
+                            
+        return view('bendahara.tabungan', compact('riwayatTabungan'));
+    })->name('bendahara.tabungan');
 });
 
 Route::middleware(['auth', 'role:petugas-laporan,tata-usaha'])->prefix('admin')->group(function () {
@@ -96,6 +104,7 @@ Route::post('/humas/iuran', [HumasController::class, 'storeIuran'])->name('humas
 Route::get('/laporan/humas', [HumasController::class, 'publicReport'])->name('laporan.humas');
 Route::get('/laporan/humas/riwayat', [\App\Http\Controllers\HumasController::class, 'riwayatArisan'])->name('humas.riwayat');
 Route::get('/laporan/dansos', [App\Http\Controllers\DansosController::class, 'laporanPublik'])->name('laporan.dansos');
+Route::post('/humas/arsipkan', [\App\Http\Controllers\HumasController::class, 'arsipkanKumpulan'])->name('humas.arsipkan');
 
 
 Route::middleware(['auth'])->group(function () {
