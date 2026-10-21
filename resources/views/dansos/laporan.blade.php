@@ -43,16 +43,33 @@
             <div class="px-6 pb-6 sm:px-8 sm:pb-8">
                 <div class="space-y-0">
                     @forelse($pengeluaran as $item)
-                        <div class="flex justify-between items-center py-4 border-b border-slate-100 last:border-0">
-                            <div>
-                                <p class="text-sm font-bold text-slate-800">{{ $item->keterangan ?? 'Menjenguk / Takziah' }}</p>
-                                <p class="text-xs text-slate-500 mt-1">{{ \Carbon\Carbon::parse($item->tanggal ?? $item->created_at)->translatedFormat('d F Y') }}</p>
+                    <div class="flex justify-between items-center py-4 border-b border-slate-100 last:border-0">
+                        <div>
+                            <!-- Menampilkan Keterangan yang diinput (Misal: Bapak Prabowo) -->
+                            <p class="text-sm font-bold text-slate-800">{{ $item->keterangan }}</p>
+                            
+                            <div class="flex items-center gap-2 mt-1.5">
+                                <!-- Menampilkan Jenis (Sakit/Takziah) dalam bentuk Badge kecil -->
+                                <span class="px-2 py-0.5 {{ $item->jenis == 'Sakit' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600' }} rounded-full text-[10px] font-extrabold uppercase tracking-wide">
+                                    {{ $item->jenis }}
+                                </span>
+                                <!-- Menampilkan Tanggal Pengeluaran -->
+                                <span class="text-xs text-slate-500 font-medium">
+                                    {{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d F Y') }}
+                                </span>
                             </div>
-                            <span class="text-sm font-bold text-slate-800">Rp {{ number_format($item->nominal, 0, ',', '.') }}</span>
                         </div>
-                    @empty
-                        <p class="text-sm text-center text-slate-400 py-8">Belum ada data pengeluaran dicatat.</p>
-                    @endforelse
+                        
+                        <!-- Menampilkan Nominal Uang -->
+                        <span class="text-sm font-bold text-slate-800">
+                            Rp {{ number_format($item->nominal, 0, ',', '.') }}
+                        </span>
+                    </div>
+                @empty
+                    <div class="py-6 text-center">
+                        <p class="text-sm text-slate-500 italic">Belum ada data pengeluaran dansos.</p>
+                    </div>
+                @endforelse
                 </div>
             </div>
         </div>
@@ -69,16 +86,33 @@
             <div class="px-6 pb-6 sm:px-8 sm:pb-8">
                 <div class="space-y-0">
                     @forelse($talangan as $item)
-                        <div class="flex justify-between items-center py-4 border-b border-slate-100 last:border-0">
-                            <div>
-                                <p class="text-sm font-bold text-slate-800">{{ $item->keterangan ?? 'Talangan Kegiatan' }}</p>
-                                <p class="text-xs text-slate-500 mt-1">{{ \Carbon\Carbon::parse($item->tanggal ?? $item->created_at)->translatedFormat('d F Y') }}</p>
+                    <div class="flex justify-between items-center py-4 border-b border-slate-100 last:border-0">
+                        <div>
+                            <!-- Menampilkan Keterangan yang diinput (Misal: Bapak Prabowo) -->
+                            <p class="text-sm font-bold text-slate-800">{{ $item->keterangan }}</p>
+                            
+                            <div class="flex items-center gap-2 mt-1.5">
+                                <!-- Menampilkan Jenis (Sakit/Takziah) dalam bentuk Badge kecil -->
+                                <span class="px-2 py-0.5 {{ $item->jenis == 'Sakit' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600' }} rounded-full text-[10px] font-extrabold uppercase tracking-wide">
+                                    {{ $item->jenis }}
+                                </span>
+                                <!-- Menampilkan Tanggal Pengeluaran -->
+                                <span class="text-xs text-slate-500 font-medium">
+                                    {{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d F Y') }}
+                                </span>
                             </div>
-                            <span class="text-sm font-bold text-slate-800">Rp {{ number_format($item->nominal, 0, ',', '.') }}</span>
                         </div>
-                    @empty
-                        <p class="text-sm text-center text-slate-400 py-8">Belum ada data talangan dicatat.</p>
-                    @endforelse
+                        
+                        <!-- Menampilkan Nominal Uang -->
+                        <span class="text-sm font-bold text-slate-800">
+                            Rp {{ number_format($item->nominal, 0, ',', '.') }}
+                        </span>
+                    </div>
+                @empty
+                    <div class="py-6 text-center">
+                        <p class="text-sm text-slate-500 italic">Belum ada data pengeluaran dansos.</p>
+                    </div>
+                @endforelse
                 </div>
             </div>
         </div>

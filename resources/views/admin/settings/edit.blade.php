@@ -92,6 +92,11 @@
 
                     <!-- Tombol Aksi -->
                     <div class="flex justify-end gap-4 pt-4 border-t border-gray-100">
+                        <span>
+                            <a href="{{ route('dashboard') }}" class="text-xs text-slate-600 hover:text-slate-900 font-semibold border border-slate-200 px-3 py-1.5 rounded-lg">
+                            ← Kembali
+                            </a>
+                        </span>
                         <button type="submit" class="bg-gray-900 hover:bg-red-600 text-white px-8 py-3 rounded-2xl font-bold transition-all shadow-md">
                             Simpan Perubahan Beranda
                         </button>

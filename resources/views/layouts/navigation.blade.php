@@ -77,46 +77,64 @@
         </div>
     </div>
 
-    <!-- Dropdown Mode HP -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden border-t border-gray-200">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-red-600 font-bold bg-red-50 border-red-600">
+    <!-- Responsive Navigation Menu (Mode HP Dashboard) -->
+    <!-- Mengganti :class dengan x-show dan menambahkan x-transition Alpine.js untuk animasi meluncur -->
+    <div x-show="open" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 -translate-y-4"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 translate-y-0"
+         x-transition:leave-end="opacity-0 -translate-y-4"
+         class="sm:hidden absolute top-[65px] left-0 w-full bg-white/90 backdrop-blur-xl border-b border-slate-100 shadow-[0_20px_40px_rgba(0,0,0,0.1)] z-50 rounded-b-3xl overflow-hidden origin-top"
+         style="display: none;">
+         
+        <div class="pt-4 pb-3 space-y-2 px-4">
+            <!-- Link Dashboard -->
+            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" 
+                class="rounded-2xl hover:bg-amber-50 hover:text-amber-600 transition-all duration-300 font-bold hover:translate-x-2 border-l-0 text-slate-700">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
         </div>
-        <!-- Responsive Settings Options -->
-        @auth
-            <div class="pt-4 pb-1 border-t border-gray-200 bg-gray-50">
-                <div class="px-4">
-                    <div class="font-bold text-base text-gray-800">{{ Auth::user()->name }}</div>
-                    <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
+
+        <!-- Area Pengaturan & Profil -->
+        <div class="pt-5 pb-5 border-t border-slate-100 bg-slate-50/60">
+            @auth
+                <div class="px-6 flex items-center gap-3 mb-2">
+                    <!-- Avatar Inisial -->
+                    <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 font-black text-lg shadow-sm">
+                        {{ substr(Auth::user()->name, 0, 1) }}
+                    </div>
+                    <div>
+                        <div class="font-black text-base text-slate-800">{{ Auth::user()->name }}</div>
+                        <div class="font-medium text-xs text-slate-500">{{ Auth::user()->email }}</div>
+                    </div>
                 </div>
 
-                <div class="mt-3 space-y-1">
-                    <x-responsive-nav-link :href="route('profile.edit')">
+                <div class="mt-4 space-y-2 px-4">
+                    <x-responsive-nav-link :href="route('profile.edit')" 
+                        class="rounded-2xl hover:bg-amber-50 hover:text-amber-600 transition-all duration-300 font-bold hover:translate-x-2 border-l-0 text-slate-700">
                         {{ __('Pengaturan Akun') }}
                     </x-responsive-nav-link>
 
-                    <!-- Authentication -->
+                    <!-- Tombol Log Keluar -->
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-
                         <x-responsive-nav-link :href="route('logout')"
-                                onclick="event.preventDefault();
-                                            this.closest('form').submit();"
-                                class="text-red-600 font-bold">
+                                onclick="event.preventDefault(); this.closest('form').submit();" 
+                                class="rounded-2xl mt-1 text-red-600 hover:bg-red-50 hover:text-red-700 transition-all duration-300 font-black hover:translate-x-2 border-l-0">
                             {{ __('Log Keluar') }}
                         </x-responsive-nav-link>
                     </form>
                 </div>
-            </div>
-        @else
-            <!-- Tombol Login untuk HP jika pengunjung adalah publik -->
-            <div class="pt-4 pb-4 border-t border-gray-200 px-4">
-                <a href="{{ route('login') }}" class="block w-full text-center px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-slate-900 text-sm font-bold rounded-lg transition-all shadow-sm">
-                    Log Masuk
-                </a>
-            </div>
-        @endauth
+            @else
+                <!-- Tombol Login untuk HP jika pengunjung adalah publik -->
+                <div class="px-4">
+                    <a href="{{ route('login') }}" class="block w-full text-center px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-slate-900 text-sm font-bold rounded-full transition-colors">
+                        Log Masuk
+                    </a>
+                </div>
+            @endauth
+        </div>
     </div>
 </nav>

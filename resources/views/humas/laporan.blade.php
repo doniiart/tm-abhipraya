@@ -77,13 +77,24 @@
                 <!-- Tabel RT 23 -->
                 <div x-show="activeTab === 'rt23'" class="mt-6 overflow-x-auto">
                     <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="border-b border-slate-100 text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
-                                <th class="py-3 px-4">Tanggal</th>
-                                <th class="py-3 px-4">Nama Pemuda</th>
-                                <th class="py-3 px-4">Arisan</th>
-                                <th class="py-3 px-4">Tabungan</th>
-                                <th class="py-3 px-4">Dansos</th>
+                        <!-- Tambahkan background amber/orange pada bagian thead ini -->
+                        <thead class="bg-gradient-to-r from-orange-100 to-amber-50 border-y border-orange-100">
+                            <tr>
+                                <th scope="col" class="py-4 px-6 text-left text-xs font-extrabold text-slate-800 uppercase tracking-wider">
+                                    Tanggal
+                                </th>
+                                <th scope="col" class="py-4 px-6 text-left text-xs font-extrabold text-slate-800 uppercase tracking-wider">
+                                    Nama Pemuda
+                                </th>
+                                <th scope="col" class="py-4 px-6 text-left text-xs font-extrabold text-slate-800 uppercase tracking-wider">
+                                    Arisan
+                                </th>
+                                <th scope="col" class="py-4 px-6 text-left text-xs font-extrabold text-slate-800 uppercase tracking-wider">
+                                    Tabungan
+                                </th>
+                                <th scope="col" class="py-4 px-6 text-left text-xs font-extrabold text-slate-800 uppercase tracking-wider">
+                                    Dansos
+                                </th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-50 text-sm">
