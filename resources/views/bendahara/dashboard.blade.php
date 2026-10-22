@@ -1,20 +1,85 @@
+@php
+    $saldoKompensasiKemarin = DB::table('kompensasis')
+            ->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') < ?", [$bulanIni])
+            ->sum('nominal'); // Sesuaikan 'nominal' dan 'tanggal' jika nama kolomnya beda
+
+        // 2. Ambil Tambahan Saldo Kompensasi Bulan Ini
+        $tambahKompensasiBulanIni = DB::table('kompensasis')
+            ->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanIni])
+            ->sum('nominal');
+
+        // 3. Total Saldo Kompensasi Saat Ini
+        $totalKompensasi = $saldoKompensasiKemarin + $tambahKompensasiBulanIni;
+
+    $bulanIni = \Carbon\Carbon::now()->format('Y-m');
+    $bulanKemarin = \Carbon\Carbon::now()->subMonth()->format('Y-m');
+
+    // 1. Ambil Total Tabungan Bulan Kemarin (Gabungan)
+    $tabunganBulanKemarin = DB::table('iurans')
+        ->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanKemarin])
+        ->sum('tabungan');
+        
+    // 2. Ambil Setoran Tabungan Candi Bulan Ini
+    // Sesuaikan 'wilayah' dengan nama kolom di database Mas Doni (misal: 'wilayah', 'rt', atau 'kategori')
+    $tabunganCandiBulanIni = DB::table('iurans')
+        ->join('anggotas', 'iurans.anggota_id', '=', 'anggotas.id')
+        ->where('anggotas.rt', '23') 
+        ->whereRaw("DATE_FORMAT(iurans.tanggal, '%Y-%m') = ?", [$bulanIni])
+        ->sum('iurans.tabungan');
+        
+    // 3. Ambil Setoran Tabungan Gunung Bulan Ini
+    $tabunganGunungBulanIni = DB::table('iurans')
+        ->join('anggotas', 'iurans.anggota_id', '=', 'anggotas.id')
+        ->where('anggotas.rt', '24') 
+        ->whereRaw("DATE_FORMAT(iurans.tanggal, '%Y-%m') = ?", [$bulanIni])
+        ->sum('iurans.tabungan');
+
+    // 4. Hitung Total Tabungan Bulan Ini (Candi + Gunung)
+    $tabunganBulanIniTotal = $tabunganCandiBulanIni + $tabunganGunungBulanIni;
+@endphp
+
 <!-- Grid 4 Kartu Kas Bendahara -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
     
-    <!-- 1. Kartu Tabungan -->
-    <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-2xs hover:shadow-md transition-shadow">
-        <div class="flex items-center justify-between mb-4">
-            <div class="w-10 h-10 rounded-full flex items-center justify-center bg-emerald-50 text-emerald-600">
+    <!-- KARTU TABUNGAN -->
+    <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm relative">
+        <div class="flex justify-between items-start mb-4">
+            <!-- Ikon Rupiah (Tetap di Kiri) -->
+            <div class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             </div>
-            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">TABUNGAN</span>
+            
+            <!-- Teks Tabungan (Pindah ke Kanan) -->
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-2">Tabungan</span>
         </div>
-        <p class="text-xs text-slate-500 font-medium mb-1">Total Saldo Terkumpul</p>
-        <h3 class="text-2xl font-black text-slate-900 tracking-tight">Rp {{ number_format($totalTabungan, 0, ',', '.') }}</h3>
-        <div class="mt-4 pt-4 border-t border-slate-100">
-            <a href="{{ route('bendahara.tabungan') }}" class="text-xs font-bold text-emerald-600 hover:text-emerald-700 inline-flex items-center transition-colors">
-                Rincian Tabungan &rarr;
-            </a>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Sisi Kiri: Total Saldo Bulan Ini -->
+            <div>
+                <p class="text-xs text-slate-500 font-medium mb-1">Tabungan Bulan Ini</p>
+                <h3 class="text-2xl font-black text-slate-800 tracking-tight">Rp {{ number_format($tabunganBulanIniTotal, 0, ',', '.') }}</h3>
+                <a href="{{ route('bendahara.tabungan') }}" class="text-xs font-bold text-emerald-600 hover:text-emerald-700 mt-2 inline-block">Rincian Tabungan &rarr;</a>
+            </div>
+
+            <!-- Sisi Kanan: Area Kotak Merah (Rincian) -->
+            <div class="border-t md:border-t-0 md:border-l border-slate-100 pt-3 md:pt-0 md:pl-4 flex flex-col justify-center space-y-2">
+                
+                <div class="flex justify-between items-center text-[11px] pb-1 border-b border-dashed border-slate-200">
+                    <span class="text-slate-500">Saldo Bulan Kemarin:</span>
+                    <span class="font-bold text-slate-700">Rp {{ number_format($tabunganBulanKemarin, 0, ',', '.') }}</span>
+                </div>
+                
+                <div class="flex justify-between items-center text-[11px]">
+                    <span class="text-slate-500">Setoran Candi:</span>
+                    <span class="font-bold text-emerald-600">+ Rp {{ number_format($tabunganCandiBulanIni, 0, ',', '.') }}</span>
+                </div>
+                
+                <div class="flex justify-between items-center text-[11px]">
+                    <span class="text-slate-500">Setoran Gunung:</span>
+                    <span class="font-bold text-emerald-600">+ Rp {{ number_format($tabunganGunungBulanIni, 0, ',', '.') }}</span>
+                </div>
+                
+            </div>
         </div>
     </div>
 
@@ -29,9 +94,15 @@
         <p class="text-xs text-slate-500 font-medium mb-1">Saldo Persewaan</p>
         <h3 class="text-2xl font-black text-slate-900 tracking-tight">Rp 0</h3>
         <div class="mt-4 pt-4 border-t border-slate-100">
-            <a href="#" class="text-xs font-bold text-blue-600 hover:text-blue-700 inline-flex items-center transition-colors">
-                Kelola Kas Muda &rarr;
-            </a>
+            <!-- HANYA BENDAHARA YANG BISA MELIHAT TOMBOL INI -->
+            @if(auth()->user()->hasAnyRole(['bendahara', 'super-admin']))
+                <a href="#" class="text-xs font-bold text-blue-600 hover:text-blue-700 inline-flex items-center transition-colors">
+                    Kelola Kas Muda &rarr;
+                </a>
+            @else
+                <!-- Tampilan untuk Ketua (Informasi Read-Only) -->
+                <span class="text-xs font-bold text-slate-400">Akses Hanya Baca</span>
+            @endif
         </div>
     </div>
 
@@ -46,26 +117,57 @@
         <p class="text-xs text-slate-500 font-medium mb-1">Saldo Persewaan</p>
         <h3 class="text-2xl font-black text-slate-900 tracking-tight">Rp 0</h3>
         <div class="mt-4 pt-4 border-t border-slate-100">
-            <a href="#" class="text-xs font-bold text-indigo-600 hover:text-indigo-700 inline-flex items-center transition-colors">
-                Kelola Kas Tua &rarr;
-            </a>
+            <!-- HANYA BENDAHARA YANG BISA MELIHAT TOMBOL INI -->
+            @if(auth()->user()->hasAnyRole(['bendahara', 'super-admin']))
+                <a href="#" class="text-xs font-bold text-blue-600 hover:text-blue-700 inline-flex items-center transition-colors">
+                    Kelola Kas Tua &rarr;
+                </a>
+            @else
+                <!-- Tampilan untuk Ketua (Informasi Read-Only) -->
+                <span class="text-xs font-bold text-slate-400">Akses Hanya Baca</span>
+            @endif
         </div>
     </div>
 
     <!-- 4. Kartu Kompensasi -->
-    <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-2xs hover:shadow-md transition-shadow">
-        <div class="flex items-center justify-between mb-4">
-            <div class="w-10 h-10 rounded-full flex items-center justify-center bg-orange-50 text-orange-600">
+        <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm relative">
+        
+        <!-- Header Kartu: Ikon Kiri, Teks Kanan -->
+        <div class="flex justify-between items-start mb-4">
+            <div class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-500">
+                <!-- Ikon Tas / Kompensasi -->
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
             </div>
-            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">KOMPENSASI</span>
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-2">Kompensasi</span>
         </div>
-        <p class="text-xs text-slate-500 font-medium mb-1">Dana Pemasukan Luar</p>
-        <h3 class="text-2xl font-black text-slate-900 tracking-tight">Rp 0</h3>
-        <div class="mt-4 pt-4 border-t border-slate-100">
-            <a href="#" class="text-xs font-bold text-orange-600 hover:text-orange-700 inline-flex items-center transition-colors">
-                Cek Riwayat &rarr;
-            </a>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Sisi Kiri: Total Saldo -->
+            <div>
+                <p class="text-xs text-slate-500 font-medium mb-1">Total Saldo Ini</p>
+                <h3 class="text-2xl font-black text-slate-800 tracking-tight">Rp {{ number_format($totalKompensasi, 0, ',', '.') }}</h3>
+                <a href="{{ route('bendahara.kompensasi') }}" class="text-xs font-bold text-orange-600 hover:text-orange-700 mt-2 inline-block">Cek Riwayat &rarr;</a>
+            </div>
+
+            <!-- Sisi Kanan: Area Rincian -->
+            <div class="border-t md:border-t-0 md:border-l border-slate-100 pt-3 md:pt-0 md:pl-4 flex flex-col justify-center space-y-2">
+                
+                <div class="flex justify-between items-center text-[11px] pb-1 border-b border-dashed border-slate-200">
+                    <span class="text-slate-500">Saldo Bln Kemarin:</span>
+                    <span class="font-bold text-slate-700">Rp {{ number_format($saldoKompensasiKemarin, 0, ',', '.') }}</span>
+                </div>
+                
+                <div class="flex justify-between items-center text-[11px] pb-1 border-b border-dashed border-slate-200">
+                    <span class="text-slate-500">Tambah Bln Ini:</span>
+                    <span class="font-bold text-orange-600">+ Rp {{ number_format($tambahKompensasiBulanIni, 0, ',', '.') }}</span>
+                </div>
+
+                <div class="flex justify-between items-center text-[11px]">
+                    <span class="text-slate-500">Total Saldo Ini:</span>
+                    <span class="font-bold text-slate-800">Rp {{ number_format($totalKompensasi, 0, ',', '.') }}</span>
+                </div>
+                
+            </div>
         </div>
     </div>
 

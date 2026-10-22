@@ -190,16 +190,23 @@
         </a>
 
     <!-- Kartu 4: Bendahara -->
-    <div class="bg-white rounded-xl p-5 sm:p-6 border border-gray-100 shadow-sm hover:border-gray-300 hover:shadow-md transition-all duration-200">
-        <div class="flex items-center justify-between mb-4">
-            <div class="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center text-gray-700 font-semibold text-sm">
-                🏛️
-            </div>
+    <div class="relative bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow group">
+    <div class="flex justify-between items-start mb-4">
+        <div class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-lg">
+            🏦
         </div>
-        <h3 class="text-xl font-bold text-gray-900 tracking-tight">Bendahara</h3>
-        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mt-0.5">Laporan Bendahara</p>
-        <p class="text-[11px] text-gray-400 mt-3 pt-3 border-t border-gray-50">Kas Muda, Kas Tua, Tabungan</p>
+        <!-- Tombol Buka -->
+        <div class="absolute top-6 right-6 text-xs text-slate-400 group-hover:text-amber-600 transition-colors flex items-center gap-1">
+                Buka <span aria-hidden="true">&rarr;</span>
+            </div>
     </div>
+    <h3 class="text-xl font-bold text-slate-900">Bendahara</h3>
+    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 mb-3">Laporan Bendahara</p>
+    <p class="text-xs text-slate-400">Kas Muda, Kas Tua, Tabungan, Kompensasi</p>
+    
+    <!-- Link area pemicu klik seluruh kartu (Opsional) -->
+    <a href="{{ route('public.bendahara') }}" class="absolute inset-0 z-10" aria-label="Buka Laporan Bendahara"></a>
+</div>
 
     <!-- Kartu 5: Persewaan -->
             <div class="bg-white rounded-xl p-5 sm:p-6 border border-gray-100 shadow-sm hover:border-gray-300 hover:shadow-md transition-all duration-200">

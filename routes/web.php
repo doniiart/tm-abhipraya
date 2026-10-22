@@ -37,6 +37,17 @@ Route::get('/', function () {
     return view('welcome', compact('agendaTerdekat', 'statAnggota', 'statKas', 'statSosial', 'galeris'));
 });
 
+Route::get('/laporan/bendahara', function () {
+        // Ambil data total untuk publik
+        $totalTabungan = \App\Models\Iuran::sum('tabungan');
+        $totalKompensasi = \App\Models\Kompensasi::sum('nominal');
+        
+        // (Opsional) Ambil riwayat kompensasi jika ingin ditampilkan ke publik
+        $riwayatKompensasi = \App\Models\Kompensasi::orderBy('tanggal', 'desc')->get();
+
+        return view('bendahara.bendahara', compact('totalTabungan', 'totalKompensasi', 'riwayatKompensasi'));
+    })->name('public.bendahara');
+
 Route::get('/anggota', [\App\Http\Controllers\AnggotaController::class, 'index'])->name('anggota.index');
 
 Route::get('/profil', function () { return view('profil'); });
@@ -54,8 +65,9 @@ Route::get('/dashboard', function () {
     $totalArisan = \App\Models\Iuran::sum('arisan');
     $totalTabungan = \App\Models\Iuran::sum('tabungan');
     $totalDansos = \App\Models\Iuran::sum('dansos');
+    $totalKompensasi = \App\Models\Kompensasi::sum('nominal');
     
-    return view('dashboard', compact('settings', 'anggotaRT23', 'anggotaRT24', 'totalArisan', 'totalTabungan', 'totalDansos'));
+    return view('dashboard', compact('settings', 'anggotaRT23', 'anggotaRT24', 'totalArisan', 'totalTabungan', 'totalDansos', 'totalKompensasi'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth'])->prefix('admin')->group(function () {
@@ -80,6 +92,8 @@ Route::middleware(['auth', 'role:bendahara'])->prefix('admin')->group(function (
                             
         return view('bendahara.tabungan', compact('riwayatTabungan'));
     })->name('bendahara.tabungan');
+    Route::get('/kompensasi', [\App\Http\Controllers\KompensasiController::class, 'index'])->name('bendahara.kompensasi');
+    Route::post('/kompensasi', [\App\Http\Controllers\KompensasiController::class, 'store'])->name('bendahara.kompensasi.store');
 });
 
 Route::middleware(['auth', 'role:petugas-laporan,tata-usaha'])->prefix('admin')->group(function () {

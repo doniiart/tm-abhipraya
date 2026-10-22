@@ -10,10 +10,9 @@
                     <p class="text-sm text-slate-500 mt-1">Rekapitulasi iuran dan kas pemuda Tunas Muda Abhipraya Candi Rejo & Gunung Rejo</p>
                 </div>
                 <!-- Tombol Kembali ke Dashboard Utama (Beranda) -->
-            <a href="{{ url('/') }}#bagian-laporan" class="inline-flex items-center justify-center px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 hover:border-slate-300 hover:shadow-sm transition-all group">
-                <svg class="w-4 h-4 mr-1.5 text-slate-400 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                Kembali ke Dashboard Utama
-            </a>
+            <a href="{{ url('/') }}#bagian-laporan" class="inline-flex items-center justify-center px-6 py-3 bg-white border border-slate-200 rounded-full text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors shadow-sm">
+                    &larr; Kembali ke Menu Utama
+                </a>
             </div>
 
             <!-- Ringkasan Kartu Total -->

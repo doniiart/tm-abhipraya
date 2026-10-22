@@ -55,7 +55,7 @@
                     @endif
 
                     <!-- BAGIAN 2: KHUSUS KETUA & TATA USAHA -->
-                    @if(auth()->user()->hasRole('super-admin') || auth()->user()->hasRole('tata-usaha'))
+                    @if(auth()->user()->hasRole('tata-usaha'))
                     <div class="border-b border-gray-100 pb-6">
                         <h3 class="text-lg font-black text-gray-900 mb-1">👥 Statistik Anggota Aktif</h3>
                         <p class="text-sm text-gray-500 mb-4">Dikelola oleh Tata Usaha & Ketua.</p>
@@ -67,7 +67,7 @@
                     @endif
 
                     <!-- BAGIAN 3: KHUSUS BENDAHARA -->
-                    @if(auth()->user()->hasRole('super-admin') || auth()->user()->hasRole('bendahara'))
+                    @if(auth()->user()->hasRole('bendahara'))
                     <div class="border-b border-gray-100 pb-6">
                         <h3 class="text-lg font-black text-gray-900 mb-1">💰 Transparansi Kas Umum</h3>
                         <p class="text-sm text-gray-500 mb-4">Dikelola oleh Bendahara & Ketua.</p>
@@ -79,7 +79,7 @@
                     @endif
 
                     <!-- BAGIAN 4: KHUSUS DANSOS -->
-                    @if(auth()->user()->hasRole('super-admin') || auth()->user()->hasRole('dansos'))
+                    @if(auth()->user()->hasRole('dansos'))
                     <div class="pb-6">
                         <h3 class="text-lg font-black text-gray-900 mb-1">❤️ Kegiatan Sosial & Dana Sosial</h3>
                         <p class="text-sm text-gray-500 mb-4">Dikelola oleh Petugas Dansos & Ketua.</p>

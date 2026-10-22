@@ -18,7 +18,6 @@
 
     $totalSaldoDansos = ($pemasukanBulanKemarin + $pemasukanBulanIni) - $pengeluaranSakitTakziah + $talanganTabungan;
 @endphp
-
 <x-app-layout>
     <!-- Header Halaman -->
     <x-slot name="header">
@@ -73,16 +72,13 @@
                 {{-- ========================================== --}}
                 {{-- KHUSUS BENDAHARA                           --}}
                 {{-- ========================================== --}}
-                @if(auth()->user()->hasRole('bendahara') || auth()->user()->hasRole('super-admin'))
-
-                    <!-- Panggil file dashboard bendahara yang terpisah -->
+                @if(auth()->user()->hasAnyRole(['bendahara']))
                     @include('bendahara.dashboard')
-
                 @endif
                 {{-- ========================================== --}}
                 {{-- KHUSUS DANSOS (DANA SOSIAL)                --}}
                 {{-- ========================================== --}}
-                @if(auth()->user()->hasRole('dansos') || auth()->user()->hasRole('super-admin'))
+                @if(auth()->user()->hasAnyRole(['dansos']))
                     <div class="bg-white rounded-[1.5rem] p-6 shadow-sm border border-slate-100 mb-4 relative overflow-hidden">
                     <!-- Hiasan Background -->
                     <div class="absolute top-0 right-0 p-8 opacity-5">
@@ -166,7 +162,6 @@
                     </a>
 
                 </div>
-                
                 @endif
 
                 {{-- ========================================== --}}
@@ -196,8 +191,7 @@
 
                 {{-- ========================================== --}}
                 {{-- KHUSUS HUMAS                               --}}
-                {{-- ========================================== --}}
-                @if(auth()->user()->hasRole('humas') || auth()->user()->hasRole('super-admin'))
+                {{-- ========================================== --}}`
 
                 @if(Auth::user()->rt_akses == 'all')
                     <!-- KARTU GABUNGAN KHUSUS KETUA -->
@@ -250,8 +244,6 @@
                             </a>
                         </div>
                     </div>
-                @endif
-
                 @if(auth()->user()->hasRole('dansos'))
                 <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
                     <div class="flex items-center justify-between mb-4">
@@ -655,15 +647,13 @@
             });
         </script>
         </form>
-    @endif
-</div>
+        </div>
 
         </div>
     </div>
-</x-app-layout>
 
 
-
+@endif
 <script>
     document.getElementById('tombol-notif')?.addEventListener('click', function() {
         if (!("Notification" in window)) {
@@ -675,5 +665,7 @@
                 alert('Mantap! Anda akan menerima pengingat kumpulan di HP ini.');
             } else {
                 alert('Izin ditolak. Anda tetap bisa melihat jadwal di halaman Beranda.');
-            }
-        });
+        }
+    });
+</script>
+</x-app-layout>

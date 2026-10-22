@@ -12,9 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('kompensasis', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+        $table->id();
+        $table->date('tanggal'); // Untuk mencatat kapan dana masuk
+        $table->string('sumber_dana'); // Keterangan (Contoh: "Dana CSR PT Bumi", "Donasi Hamba Allah")
+        $table->integer('nominal'); // Jumlah uang yang masuk
+        $table->timestamps();
+    });
     }
 
     /**
