@@ -2,6 +2,21 @@
     use Illuminate\Support\Facades\DB;
 
     $bulanIni = \Carbon\Carbon::now()->format('Y-m');
+    $tabunganBulanIniTotal = DB::table('iurans')
+        ->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanIni])
+        ->sum('tabungan');
+
+    // Total Arisan Bulan Ini
+    $arisanBulanIniTotal = DB::table('iurans')
+        ->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanIni])
+        ->sum('arisan');
+
+    // Total Dansos Bulan Ini
+    $dansosBulanIniTotal = DB::table('iurans')
+        ->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanIni])
+        ->sum('dansos');
+
+    $bulanIni = \Carbon\Carbon::now()->format('Y-m');
     
     $pemasukanBulanIni = DB::table('iurans')->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanIni])->sum('dansos');
     $pemasukanBulanKemarin = DB::table('iurans')->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') < ?", [$bulanIni])->sum(DB::raw('dansos + arisan'));
@@ -215,15 +230,15 @@
                         <div class="grid grid-cols-3 gap-4 pt-4 border-t border-slate-100 text-center sm:text-left">
                             <div>
                                 <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Arisan</p>
-                                <p class="text-lg font-extrabold text-slate-800 mt-0.5">Rp 310.000</p>
+                                <p class="text-lg font-extrabold text-slate-800 mt-0.5">Rp {{ number_format($arisanBulanIniTotal, 0, ',', '.') }}</p>
                             </div>
                             <div>
                                 <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Tabungan</p>
-                                <p class="text-lg font-extrabold text-slate-800 mt-0.5">Rp 186.000</p>
+                                <p class="text-lg font-extrabold text-slate-800 mt-0.5">Rp {{ number_format($tabunganBulanIniTotal, 0, ',', '.') }}</p>
                             </div>
                             <div>
                                 <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Dansos</p>
-                                <p class="text-lg font-extrabold text-slate-800 mt-0.5">Rp 104.000</p>
+                                <p class="text-lg font-extrabold text-slate-800 mt-0.5">Rp {{ number_format($dansosBulanIniTotal, 0, ',', '.') }}</p>
                             </div>
                         </div>
                     </div>

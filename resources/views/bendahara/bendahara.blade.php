@@ -1,3 +1,32 @@
+@php
+    use Illuminate\Support\Facades\DB;
+
+    // 1. Definisikan bulannya terlebih dahulu di paling atas!
+    $bulanIni = \Carbon\Carbon::now()->format('Y-m');
+    $bulanKemarin = \Carbon\Carbon::now()->subMonth()->format('Y-m');
+
+    // 2. Baru jalankan query-nya
+    $tabunganBulanIniTotal = DB::table('iurans')
+        ->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanIni])
+        ->sum('tabungan');
+
+    $tabunganBulanKemarin = DB::table('iurans')
+        ->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanKemarin])
+        ->sum('tabungan');
+        
+    $tabunganCandiBulanIni = DB::table('iurans')
+        ->join('anggotas', 'iurans.anggota_id', '=', 'anggotas.id')
+        ->where('anggotas.rt', '23') 
+        ->whereRaw("DATE_FORMAT(iurans.tanggal, '%Y-%m') = ?", [$bulanIni])
+        ->sum('iurans.tabungan');
+
+    $tabunganGunungBulanIni = DB::table('iurans')
+        ->join('anggotas', 'iurans.anggota_id', '=', 'anggotas.id')
+        ->where('anggotas.rt', '24') 
+        ->whereRaw("DATE_FORMAT(iurans.tanggal, '%Y-%m') = ?", [$bulanIni])
+        ->sum('iurans.tabungan');
+@endphp
+
 <x-app-layout>
     <div class="py-12 bg-slate-50 min-h-screen">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -16,18 +45,52 @@
             </div>
 
             <!-- Grid 4 Kartu Kas (Versi Publik) -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 items-start">
                 
                 <!-- Kartu Tabungan -->
-                <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center bg-emerald-50 text-emerald-600">
+                <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm relative">
+    
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">TABUNGAN</span>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-2">Tabungan</span>
                     </div>
-                    <p class="text-xs text-slate-500 font-medium mb-1">Total Saldo Terkumpul</p>
-                    <h3 class="text-2xl font-black text-slate-900 tracking-tight">Rp {{ number_format($totalTabungan, 0, ',', '.') }}</h3>
+
+                    <div>
+                        <p class="text-xs text-slate-500 font-medium mb-1">Total Saldo Terkumpul</p>
+                        <h3 class="text-2xl font-black text-slate-800 tracking-tight">Rp {{ number_format($tabunganBulanIniTotal, 0, ',', '.') }}</h3>
+                        
+                        <!-- Teks yang bisa diklik -->
+                        <button type="button" onclick="toggleRincian()" class="text-xs font-bold text-emerald-600 hover:text-emerald-700 mt-2 flex items-center gap-1 cursor-pointer focus:outline-none transition-colors">
+                            <span id="teks-tombol">Lihat Rincian</span>
+                            <!-- Ikon Panah -->
+                            <svg id="ikon-panah" class="w-3 h-3 transition-transform duration-500 ease-in-out" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Area Rincian (Animasi Smooth: max-h-0 -> max-h-40) -->
+                    <div id="rincian-tabungan" class="grid transition-all duration-500 ease-in-out" style="grid-template-rows: 0fr;">
+                        <!-- Tambahkan div pembungkus overflow-hidden ini -->
+                        <div class="overflow-hidden">
+                            <div class="border-t border-slate-100 pt-3 mt-4 flex flex-col justify-center space-y-2">
+                                <div class="flex justify-between items-center text-[11px] pb-1 border-b border-dashed border-slate-200">
+                                    <span class="text-slate-500">Saldo Bulan Kemarin:</span>
+                                    <span class="font-bold text-slate-700">Rp {{ number_format($tabunganBulanKemarin, 0, ',', '.') }}</span>
+                                </div>
+                                <div class="flex justify-between items-center text-[11px]">
+                                    <span class="text-slate-500">Setoran Candi:</span>
+                                    <span class="font-bold text-emerald-600">+ Rp {{ number_format($tabunganCandiBulanIni, 0, ',', '.') }}</span>
+                                </div>
+                                <div class="flex justify-between items-center text-[11px]">
+                                    <span class="text-slate-500">Setoran Gunung:</span>
+                                    <span class="font-bold text-emerald-600">+ Rp {{ number_format($tabunganGunungBulanIni, 0, ',', '.') }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Kartu Kas Muda (Sementara Rp 0) -->
@@ -72,4 +135,26 @@
 
         </div>
     </div>
+
+    <script>
+        function toggleRincian() {
+            const rincianDiv = document.getElementById('rincian-tabungan');
+            const ikon = document.getElementById('ikon-panah');
+            const teks = document.getElementById('teks-tombol');
+
+            // Putar ikon panah
+            ikon.classList.toggle('rotate-180');
+            
+            // Cek style inline grid-template-rows
+            if (rincianDiv.style.gridTemplateRows === '0fr') {
+                // Buka rincian
+                rincianDiv.style.gridTemplateRows = '1fr';
+                teks.innerText = 'Tutup Rincian';
+            } else {
+                // Tutup rincian
+                rincianDiv.style.gridTemplateRows = '0fr';
+                teks.innerText = 'Lihat Rincian';
+            }
+        }
+    </script>
 </x-app-layout>
