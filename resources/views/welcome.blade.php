@@ -131,10 +131,13 @@
         </a>
 
         <!-- Kotak: Kegiatan Sosial (Warna Merah) -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center hover:shadow-md transition-shadow">
-            <h3 class="text-3xl font-extrabold text-red-600 mb-1">{{ $settings->stat_sosial ?? '36+' }}</h3>
-            <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Kegiatan Sosial</p>
-        </div>
+        <!-- Kartu Kegiatan Sosial (Sekarang Bisa Diklik) -->
+        <a href="{{ route('kegiatan.publik') }}" class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col items-center justify-center hover:shadow-md hover:border-red-200 transition-all duration-300 group cursor-pointer">
+            <h3 class="text-3xl font-black text-red-600 group-hover:scale-110 transition-transform duration-300">
+                {{ $total_kegiatan ?? '0' }}+
+            </h3>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">Kegiatan Sosial</p>
+        </a>
     </div>
 
 <!-- Baris 2: Laporan Keuangan & Administrasi -->
@@ -423,4 +426,39 @@
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
+
+    <!-- Tombol Scroll to Top -->
+    <button id="btnScrollTop" onclick="scrollToTop()" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 flex items-center justify-center h-14 px-4 rounded-full bg-gradient-to-tr from-red-600 to-amber-500 text-white shadow-[0_10px_20px_rgba(239,68,68,0.4)] hover:shadow-[0_15px_25px_rgba(239,68,68,0.6)] hover:scale-105 transition-all duration-500 opacity-0 translate-y-10 pointer-events-none group">
+        
+        <!-- Ikon Panah -->
+        <svg class="w-6 h-6 animate-bounce group-hover:animate-none transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+        
+        <!-- Teks Tersembunyi yang Muncul Saat Disentuh -->
+        
+        
+    </button>
+
+    <!-- Script Penggerak Transisi Mulus -->
+    <script>
+        const btnScrollTop = document.getElementById('btnScrollTop');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                // Muncul dengan efek mengapung & fade in
+                btnScrollTop.classList.remove('opacity-0', 'translate-y-10', 'pointer-events-none');
+                btnScrollTop.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
+            } else {
+                // Hilang dengan efek tenggelam & fade out
+                btnScrollTop.classList.add('opacity-0', 'translate-y-10', 'pointer-events-none');
+                btnScrollTop.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+    </script>
 @endsection

@@ -35,8 +35,9 @@ Route::get('/', function () {
     $statKas = $settings->stat_kas ?? '0%';
     $statSosial = $settings->stat_sosial ?? '0+';
 
+    $total_kegiatan = \App\Models\Galeri::count();
     // 2. PASTIKAN 'galeris' IKUT DIKIRIM KE DALAM COMPACT
-    return view('welcome', compact('agendaTerdekat', 'statAnggota', 'statKas', 'statSosial', 'galeris'));
+    return view('welcome', compact('agendaTerdekat', 'statAnggota', 'statKas', 'statSosial', 'galeris', 'total_kegiatan'));
 });
 
 Route::get('/laporan/bendahara', function () {
@@ -130,6 +131,7 @@ Route::get('/laporan/humas/riwayat', [\App\Http\Controllers\HumasController::cla
 Route::get('/laporan/dansos', [App\Http\Controllers\DansosController::class, 'laporanPublik'])->name('laporan.dansos');
 Route::post('/humas/arsipkan', [\App\Http\Controllers\HumasController::class, 'arsipkanKumpulan'])->name('humas.arsipkan');
 Route::get('/laporan/persewaan', [App\Http\Controllers\AsetController::class, 'laporanPublik'])->name('laporan.persewaan');
+Route::get('/kegiatan-sosial', [App\Http\Controllers\GaleriController::class, 'halamanPublik'])->name('kegiatan.publik');
 
 
 Route::middleware(['auth'])->group(function () {

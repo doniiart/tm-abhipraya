@@ -50,4 +50,15 @@ class GaleriController extends Controller
         
         return redirect()->route('galeri.index')->with('success', 'Foto kegiatan berhasil dihapus!');
     }
+
+    public function halamanPublik()
+    {
+        // Ambil semua data kegiatan dari database, urutkan dari yang paling baru
+        $kegiatans = \App\Models\Galeri::latest()->get();
+        
+        // Hitung total kegiatan untuk ditampilkan di beranda (opsional jika ingin dinamis)
+        $total_kegiatan = \App\Models\Galeri::count();
+
+        return view('kegiatan.publik', compact('kegiatans', 'total_kegiatan'));
+    }
 }
