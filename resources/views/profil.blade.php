@@ -3,20 +3,27 @@
     <!-- HEADER MODERN -->
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-            <div class="flex items-start justify-between mb-6">
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Profil Organisasi</h2>
-                    <p class="text-sm text-gray-500 mt-1">Mengenal lebih dekat Karang Taruna Tunas Muda Abhipraya</p>
-                </div>
-
-                <!-- TOMBOL TEKS DIPLOMASI (Letaknya di Kanan) -->
-                <button onclick="bukaModalDiplomasi()" title="Teks Diplomasi" class="p-2.5 bg-white border border-gray-200 rounded-xl shadow-sm hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all group">
-                    <!-- Ikon Kertas -->
-                    <svg class="w-6 h-6 text-gray-500 group-hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex items-start justify-between mb-6 w-full">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Profil Organisasi</h2>
+                <p class="text-sm text-gray-500 mt-1">Mengenal lebih dekat Karang Taruna Tunas Muda Abhipraya</p>
+            </div>
+            
+            <!-- Tampilkan Tombol Edit HANYA jika petugas sudah Login -->
+            @auth
+                <a href="{{ url('/profil/edit') }}" class="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl shadow-md hover:bg-slate-800 hover:shadow-lg transition-all duration-300">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    <span class="hidden sm:inline">Edit Profil</span>
+                </a>
+            @else
+                <!-- Ikon Dokumen Statis (Hanya muncul untuk warga/publik yang belum login) -->
+                <button onclick="bukaModalDiplomasi()" title="Teks Diplomasi" class="p-2.5 bg-white border border-gray-200 rounded-xl shadow-sm hover:bg-red-50 hover:text-red-600 transition-colors">
+                    <svg class="w-6 h-6 text-gray-500 hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
                 </button>
-            </div>
+            @endauth
+        </div>
             
             <!-- Tombol Kembali -->
             <a href="{{ url('/') }}" class="inline-flex items-center justify-center px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 hover:border-slate-300 hover:shadow-sm transition-all group">
@@ -61,29 +68,40 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     </div>
                     <div class="text-xs font-bold tracking-widest text-slate-400 uppercase mb-1">Tahun Berdiri</div>
-                    <div class="text-xl font-extrabold text-slate-800">2020</div>
+                    <p class="text-xl font-bold text-slate-900 mt-1">
+                        {{ $settings->tahun_berdiri}}
+                    </p>
                     <div class="text-xs text-slate-500 mt-1">Terus berkembang hingga saat ini</div>
                 </div>
 
-                <!-- Info Alamat -->
-                <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-                    <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-4">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.243-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                <!-- Info Alamat / Pusat Kesekretariatan (Bisa Diklik) -->
+                <a href="{{ url('/') }}#peta-lokasi" class="block bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-lg hover:border-blue-200 hover:-translate-y-1 transition-all duration-300 group cursor-pointer">
+                    <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                     </div>
-                    <div class="text-xs font-bold tracking-widest text-slate-400 uppercase mb-1">Pusat Kesekretariatan</div>
+                    <div class="text-xs font-bold tracking-widest text-slate-400 uppercase mb-1 group-hover:text-blue-500 transition-colors">Pusat Kesekretariatan</div>
                     <div class="text-sm font-extrabold text-slate-800 leading-snug">Dk. Candi Rejo & Gunung Rejo</div>
-                    <div class="text-xs text-slate-500 mt-1">RT 23 & RT 24, Wonosari,Klaten</div>
-                </div>
+                    <div class="text-xs text-slate-500 mt-1">RT 23 & RT 24, Wonosari, Klaten</div>
+                </a>
 
-                <!-- Info Jumlah Anggota -->
-                <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-                    <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                <!-- Info Jumlah Anggota (Sekarang Bisa Diklik) -->
+                <a href="{{ url('/anggota') }}" class="block bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-lg hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 group cursor-pointer">
+                    
+                    <!-- Ikon -->
+                    <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4 group-hover:bg-emerald-100 group-hover:scale-110 transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
                     </div>
-                    <div class="text-xs font-bold tracking-widest text-slate-400 uppercase mb-1">Kekuatan Anggota</div>
-                    <div class="text-xl font-extrabold text-slate-800">60+ Pemuda</div>
+                    
+                    <!-- Teks -->
+                    <div class="text-xs font-bold tracking-widest text-slate-400 uppercase mb-1 group-hover:text-emerald-500 transition-colors">Kekuatan Anggota</div>
+                    <div class="text-xl font-extrabold text-slate-800">
+                        <!-- Jika angka ini juga ingin dibuat dinamis dari database -->
+                        {{ $settings?->stat_anggota ?? '60+' }} Pemuda
+                    </div>
                     <div class="text-xs text-slate-500 mt-1">Aktif berpartisipasi dan bersinergi</div>
-                </div>
+                </a>
             </div>
 
             <!-- VISI & MISI -->

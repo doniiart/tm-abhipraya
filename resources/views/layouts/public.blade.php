@@ -40,7 +40,7 @@
             <div class="hidden md:flex items-center space-x-8 font-semibold text-sm">
                 <a href="/" class="text-gray-600 hover:text-red-600 transition duration-300 hover:-translate-y-0.5">Beranda</a>
                 <a href="/profil" class="text-gray-600 hover:text-red-600 transition duration-300 hover:-translate-y-0.5">Profil</a>
-                <a href="/kegiatan" class="text-gray-600 hover:text-red-600 transition duration-300 hover:-translate-y-0.5">Kegiatan</a>
+                <a href="{{ route('kegiatan.publik') }}" class="text-gray-600 hover:text-red-600 transition duration-300 hover:-translate-y-0.5">Kegiatan</a>
                 
                 @auth
                     <!-- JIKA SUDAH LOGIN: Tampilkan Dropdown -->
@@ -78,7 +78,7 @@
                     <!-- Efek dinamis: hover:bg-white/50 (kotak transparan saat disentuh) dan sedikit naik (hover:-translate-y-0.5) -->
                     <a href="/" class="block py-3 hover:bg-white/60 rounded-2xl hover:text-red-600 hover:-translate-y-0.5 transition-all duration-300">Beranda</a>
                     <a href="/profil" class="block py-3 hover:bg-white/60 rounded-2xl hover:text-red-600 hover:-translate-y-0.5 transition-all duration-300">Profil</a>
-                    <a href="/kegiatan" class="block py-3 hover:bg-white/60 rounded-2xl hover:text-red-600 hover:-translate-y-0.5 transition-all duration-300">Kegiatan</a>
+                    <a href="{{ route('kegiatan.publik') }}" class="block py-3 hover:bg-white/60 rounded-2xl hover:text-red-600 hover:-translate-y-0.5 transition-all duration-300">Kegiatan</a>
                     
                     <div class="pt-4 mt-2 border-t border-gray-400/20">
                         @auth
@@ -193,7 +193,7 @@
                 <!-- KOLOM 4: PETA LOKASI -->
                 <div>
                     <h3 class="text-white font-bold text-lg mb-6">Peta Lokasi</h3>
-                    <div class="bg-slate-800 rounded-2xl p-2 border border-slate-700 shadow-inner h-48 relative overflow-hidden group">
+                    <div id="peta-lokasi" class="bg-slate-800 rounded-2xl p-2 border border-slate-700 shadow-inner h-48 relative overflow-hidden group">
                         <!-- Google Maps Iframe (Ganti src dengan embed map asli sekretariat Anda) -->
                         <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d967.4573578088114!2d110.74373498619279!3d-7.64215738566555!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sen!2sid!4v1792715831720!5m2!1sen!2sid" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
                     </div>

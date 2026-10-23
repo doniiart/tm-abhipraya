@@ -90,6 +90,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/persewaan/sewa', [SewaController::class, 'store'])->name('sewa.store');
     Route::put('/persewaan/sewa/{id}/kembalikan', [SewaController::class, 'kembalikan'])->name('sewa.kembalikan');
     Route::delete('/persewaan/sewa/{id}', [SewaController::class, 'destroy'])->name('sewa.destroy');
+    Route::get('/profil/edit', [App\Http\Controllers\ProfilController::class, 'edit']);
+    Route::get('/profil', function () {
+    // Ambil baris pertama dari tabel setting_webs
+    $settings = \App\Models\SettingWeb::first(); 
+    
+    // Kirim variabel $settings ke tampilan profil.blade.php
+    return view('profil', compact('settings')); 
+});
 });
 
 Route::middleware(['auth', 'role:bendahara'])->prefix('admin')->group(function () {
