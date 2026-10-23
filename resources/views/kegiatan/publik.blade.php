@@ -9,10 +9,10 @@
                 
                 <!-- Filter Kategori (Desain Statis untuk Tampilan) -->
                 <div class="flex flex-wrap justify-center gap-2 mt-6">
-                    <button class="px-5 py-2 bg-slate-900 text-white text-xs font-bold rounded-full shadow-md">Semua</button>
-                    <button class="px-5 py-2 bg-white text-slate-600 text-xs font-bold rounded-full border border-slate-200 hover:bg-slate-50 transition">Kumpulan Rutin</button>
-                    <button class="px-5 py-2 bg-white text-slate-600 text-xs font-bold rounded-full border border-slate-200 hover:bg-slate-50 transition">Bakti Sosial</button>
-                    <button class="px-5 py-2 bg-white text-slate-600 text-xs font-bold rounded-full border border-slate-200 hover:bg-slate-50 transition">Kepemudaan</button>
+                    <button type="button" class="px-5 py-2 bg-slate-900 text-white text-xs font-bold rounded-full shadow-md focus:outline-none transition-all select-none">Semua</button>
+                    <button type="button" class="px-5 py-2 bg-white text-slate-600 text-xs font-bold rounded-full border border-slate-200 hover:bg-slate-50 hover:text-slate-900 active:bg-slate-100 active:text-slate-900 focus:outline-none focus:text-slate-900 transition-all select-none">Kumpulan Rutin</button>
+                    <button type="button" class="px-5 py-2 bg-white text-slate-600 text-xs font-bold rounded-full border border-slate-200 hover:bg-slate-50 hover:text-slate-900 active:bg-slate-100 active:text-slate-900 focus:outline-none focus:text-slate-900 transition-all select-none">Bakti Sosial</button>
+                    <button type="button" class="px-5 py-2 bg-white text-slate-600 text-xs font-bold rounded-full border border-slate-200 hover:bg-slate-50 hover:text-slate-900 active:bg-slate-100 active:text-slate-900 focus:outline-none focus:text-slate-900 transition-all select-none">Kepemudaan</button>
                 </div>
             </div>
 
