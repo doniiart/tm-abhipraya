@@ -29,7 +29,7 @@
                         </thead>
                         <tbody class="divide-y divide-slate-100/80">
                             @forelse($riwayat as $index => $item)
-                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors" x-data="{ showModal: false }">
                                     <td class="py-4 px-2 text-center text-xs font-semibold text-slate-400">
                                         {{ $index + 1 }}
                                     </td>
@@ -47,8 +47,92 @@
                                     </td>
                                     
                                     <!-- Menampilkan Total Pendapatan Hari Itu -->
-                                    <td class="py-4 px-2 text-right font-extrabold text-emerald-600 text-base">
-                                        Rp {{ number_format($item->total_pendapatan, 0, ',', '.') }}
+                                    <td class="py-4 px-6 text-right relative">
+                                        <!-- Teks Total & Tombol Rincian -->
+                                        <div class="font-bold text-emerald-600">
+                                            Rp {{ number_format($item->total_pendapatan, 0, ',', '.') }}
+                                        </div>
+                                        <!-- Teks abu-abu transparan yang bisa diklik -->
+                                        <button @click="showModal = true" type="button" class="text-[11px] text-slate-400 hover:text-slate-700 transition-colors mt-1 underline cursor-pointer">
+                                            Lihat Rincian
+                                        </button>
+
+                                        <!-- KOTAK MODAL (POP-UP) BLUR -->
+                                        <template x-teleport="body">
+                                            <div x-show="showModal" 
+                                                style="display: none;"
+                                                class="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm transition-opacity"
+                                                x-transition:enter="ease-out duration-300"
+                                                x-transition:enter-start="opacity-0"
+                                                x-transition:enter-end="opacity-100"
+                                                x-transition:leave="ease-in duration-200"
+                                                x-transition:leave-start="opacity-100"
+                                                x-transition:leave-end="opacity-0">
+                                                
+                                                <!-- Isi Kotak Putih di Tengah -->
+                                                <div @click.outside="showModal = false" class="bg-white w-full max-w-3xl max-h-[85vh] overflow-y-auto rounded-3xl shadow-2xl p-6 sm:p-8 m-4 relative transform transition-all"
+                                                    x-transition:enter="ease-out duration-300"
+                                                    x-transition:enter-start="opacity-0 translate-y-8 scale-95"
+                                                    x-transition:enter-end="opacity-100 translate-y-0 scale-100">
+                                                    
+                                                    <!-- Header Modal (Judul & Tombol Silang) -->
+                                                    <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-100">
+                                                        <div>
+                                                            <h3 class="text-xl font-extrabold text-slate-800">Rincian Iuran Anggota</h3>
+                                                            <p class="text-sm text-slate-500 mt-1">Tanggal Kumpulan: {{ $item->tanggal }}</p>
+                                                        </div>
+                                                        <button @click="showModal = false" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-red-100 hover:text-red-600 transition-colors">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                                        </button>
+                                                    </div>
+
+                                                    <!-- Tabel Rincian Anggota -->
+                                                    <div class="overflow-x-auto">
+                                                        <table class="w-full text-left text-sm">
+                                                            <thead class="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                                                                <tr>
+                                                                    <th class="py-3 px-4 rounded-tl-xl">Nama Pemuda</th>
+                                                                    <th class="py-3 px-4">Arisan</th>
+                                                                    <th class="py-3 px-4">Tabungan</th>
+                                                                    <th class="py-3 px-4 rounded-tr-xl">Dansos</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody class="divide-y divide-slate-100">
+                                                                @php
+                                                                    // Mengambil data iuran asli dari database berdasarkan tanggal baris ini
+                                                                    $dataRincian = \App\Models\Iuran::with('anggota')
+                                                                                    ->where('tanggal', $item->tanggal)
+                                                                                    ->get();
+                                                                @endphp
+
+                                                                @forelse($dataRincian as $detail)
+                                                                    <tr class="hover:bg-slate-50">
+                                                                        <td class="py-3 px-4 font-bold text-slate-700">
+                                                                            {{ $detail->anggota->nama ?? 'Nama tidak ditemukan' }}
+                                                                        </td>
+                                                                        <td class="py-3 px-4 text-slate-700">
+                                                                            Rp {{ number_format($detail->arisan, 0, ',', '.') }}
+                                                                        </td>
+                                                                        <td class="py-3 px-4 text-slate-700">
+                                                                            Rp {{ number_format($detail->tabungan, 0, ',', '.') }}
+                                                                        </td>
+                                                                        <td class="py-3 px-4 text-slate-700">
+                                                                            Rp {{ number_format($detail->dansos, 0, ',', '.') }}
+                                                                        </td>
+                                                                    </tr>
+                                                                @empty
+                                                                    <tr>
+                                                                        <td colspan="4" class="py-4 px-4 text-center text-slate-500 italic">
+                                                                            Tidak ada data rincian yang ditemukan.
+                                                                        </td>
+                                                                    </tr>
+                                                                @endforelse
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </template>
                                     </td>
                                 </tr>
                             @empty

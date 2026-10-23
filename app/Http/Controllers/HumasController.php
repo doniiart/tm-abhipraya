@@ -38,6 +38,49 @@ class HumasController extends Controller
         // Total Saldo Dansos Tersisa
         // Rumus: (Bulan Kemarin + Pemasukan Bulan Ini) - Pengeluaran + Talangan
         $totalSaldoDansos = ($pemasukanBulanKemarin + $pemasukanBulanIni) - $pengeluaranSakitTakziah + $talanganTabungan;
+
+        $agendaSebelumnya = \App\Models\MeetingAgenda::where('status', 'selesai')
+                                ->orderBy('id', 'desc')
+                                ->first();
+
+       // 1. Ambil 2 Agenda Terakhir yang diurutkan berdasarkan ID terbaru
+        // (Agenda index [0] adalah agenda bulan ini yang sedang berjalan)
+        // (Agenda index [1] adalah agenda bulan KEMARIN yang sudah lewat)
+        $duaAgendaTerakhir = \App\Models\MeetingAgenda::orderBy('id', 'desc')->take(2)->get();
+        
+        // 2. Pastikan minimal ada 2 agenda di sistem, baru kita bisa ngecek "bulan kemarin"
+        if ($duaAgendaTerakhir->count() > 1) {
+            $agendaKemarin = $duaAgendaTerakhir[1]; // Ambil data agenda bulan lalu
+            $tanggalKemarin = $agendaKemarin->tanggal; // Asumsi kolomnya bernama 'tanggal' di tabel meeting_agendas
+
+            // 3. Cek tunggakan untuk anggota RT 23
+            foreach ($anggotaRT23 as $anggota) {
+                // Cek apakah anggota ini ADA menyetor uang di "tanggalKemarin"
+                $cekIuran = \App\Models\Iuran::where('anggota_id', $anggota->id)
+                                             ->where('tanggal', $tanggalKemarin)
+                                             ->first();
+
+                // Jika datanya tidak ada, atau total arisan+tabungan+dansos = 0, berarti nunggak!
+                if (!$cekIuran || ($cekIuran->arisan + $cekIuran->tabungan + $cekIuran->dansos) == 0) {
+                    $anggota->punya_tunggakan = true;
+                } else {
+                    $anggota->punya_tunggakan = false;
+                }
+            }
+
+            // 4. Lakukan hal yang sama untuk anggota RT 24
+            foreach ($anggotaRT24 as $anggota) {
+                $cekIuran = \App\Models\Iuran::where('anggota_id', $anggota->id)
+                                             ->where('tanggal', $tanggalKemarin)
+                                             ->first();
+
+                if (!$cekIuran || ($cekIuran->arisan + $cekIuran->tabungan + $cekIuran->dansos) == 0) {
+                    $anggota->punya_tunggakan = true;
+                } else {
+                    $anggota->punya_tunggakan = false;
+                }
+            }
+        }
         // -----------------------------
 
         // 2. TAMBAHKAN VARIABEL KEUANGAN KE DALAM COMPACT
@@ -143,11 +186,33 @@ class HumasController extends Controller
     }
 
     public function arsipkanKumpulan()
-{
-    // Mengubah semua data iuran yang masih 'aktif' menjadi 'arsip'
-    \App\Models\Iuran::where('status_riwayat', 'aktif')
-                     ->update(['status_riwayat' => 'arsip']);
+    {
+        // Mengubah semua data iuran yang masih 'aktif' menjadi 'arsip'
+        \App\Models\Iuran::where('status_riwayat', 'aktif')
+                        ->update(['status_riwayat' => 'arsip']);
 
-    return back()->with('success', 'Data iuran pertemuan sebelumnya berhasil diarsipkan! Halaman utama telah direset.');
+        return back()->with('success', 'Data iuran pertemuan sebelumnya berhasil diarsipkan! Halaman utama telah direset.');
+    }
+
+    public function manajemenIuran()
+{
+    // 1. Ambil ID pertemuan/kumpulan terakhir yang sudah selesai
+    $pertemuanTerakhir = Pertemuan::latest('tanggal')->first();
+
+    // 2. Ambil semua data pemuda
+    $daftarPemuda = Anggota::all()->map(function($pemuda) use ($pertemuanTerakhir) {
+        
+        // 3. Cek apakah di pertemuan terakhir, pemuda ini setorannya 0 atau tidak hadir
+        $cekSetoran = Iuran::where('anggota_id', $pemuda->id)
+                           ->where('pertemuan_id', $pertemuanTerakhir->id)
+                           ->first();
+        
+        // Jika data setoran tidak ada ATAU total setorannya 0, tandai sebagai nunggak
+        $pemuda->punya_tunggakan = (!$cekSetoran || $cekSetoran->total_setoran == 0) ? true : false;
+        
+        return $pemuda;
+    });
+
+    return view('humas.manajemen_iuran', compact('daftarPemuda'));
 }
 }
