@@ -39,7 +39,7 @@
 @endphp
 
 <!-- Grid 4 Kartu Kas Bendahara -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
     
     <!-- KARTU TABUNGAN -->
     <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm relative">

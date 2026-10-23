@@ -60,7 +60,7 @@
                             Akses: {{ Auth::user()->roles->first()->name ?? 'Anggota Biasa' }}
                         </p>
                         <h3 class="text-3xl md:text-4xl font-black text-white mb-2">
-                            Halo, {{ explode(' ', Auth::user()->name)[0] }}! 👋
+                            Halo {{ explode(' ', Auth::user()->name)[0] }}! 👋
                         </h3>
                         <p class="text-gray-300 font-medium max-w-xl">
                             Selamat datang di panel kerja Anda. Berikut adalah ringkasan aktivitas dan tugas terbaru yang perlu Anda perhatikan hari ini.
@@ -82,101 +82,99 @@
             </div>
 
             <!-- BENTO GRID SYSTEM: Konten Dinamis Berdasarkan Role -->
-            <div class="max-w-3xl mx-auto flex flex-col gap-6">
+    <div class="max-w-3xl mx-auto flex flex-col gap-6">
 
-                {{-- ========================================== --}}
-                {{-- KHUSUS BENDAHARA                           --}}
-                {{-- ========================================== --}}
+                {{-- KHUSUS BENDAHARA --}}
                 @if(auth()->user()->hasAnyRole(['bendahara']))
                     @include('bendahara.dashboard')
                 @endif
-                {{-- ========================================== --}}
-                {{-- KHUSUS DANSOS (DANA SOSIAL)                --}}
-                {{-- ========================================== --}}
+
+                <!-- KHUSUS PETUGAS PERSEWAAN -->
+                @if(auth()->user()->hasAnyRole(['persewaan', 'Petugas Persewaan']))
+                    @include('persewaan.dashboard')
+                @endif
+
+                {{-- KHUSUS DANSOS (DANA SOSIAL) --}}
                 @if(auth()->user()->hasAnyRole(['dansos']))
-                    <div class="bg-white rounded-[1.5rem] p-6 shadow-sm border border-slate-100 mb-4 relative overflow-hidden">
-                    <!-- Hiasan Background -->
-                    <div class="absolute top-0 right-0 p-8 opacity-5">
-                        <svg class="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                    </div>
-
-                    <div class="flex items-center justify-between mb-4 relative z-10">
-                        <div class="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center text-red-500 border border-red-100">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                            </svg>
-                        </div>
-                        <span class="text-[10px] font-bold text-slate-400 tracking-widest uppercase">Dana Sosial</span>
-                    </div>
-                    <div class="relative z-10">
-                        <p class="text-sm font-medium text-slate-500 mb-1">Total Saldo Dansos Tersisa</p>
-                        <h3 class="text-3xl font-black text-slate-800 tracking-tight">
-                            Rp {{ number_format($totalSaldoDansos, 0, ',', '.') }}
-                        </h3>
-                    </div>
-                </div>
-
-            <div class="flex flex-col gap-2">
-                <!-- GRID RINCIAN ARUS KAS DANSOS -->
-                <div class="grid grid-cols-2 gap-3">
-                    
-                    <!-- Kartu 1: Bulan Kemarin -->
-                    <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-100 shadow-sm">
-                        <div class="flex items-center gap-2 mb-2">
-                            <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <div class="bg-white rounded-[1.5rem] p-6 shadow-sm border border-red-100 relative mb-6">
+                        <div class="flex items-center justify-between mb-4 relative z-10">
+                            <div class="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center text-red-500 border border-red-100">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
                             </div>
-                            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Bulan Kemarin</span>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Dana Sosial</span>
                         </div>
-                        <p class="text-[10px] text-slate-400 mb-1 line-clamp-1">Total Dansos + Arisan</p>
-                        <h4 class="text-sm sm:text-base font-bold text-slate-800">
-                            Rp {{ number_format($pemasukanBulanKemarin, 0, ',', '.') }}
-                        </h4>
+                        <div class="relative z-10">
+                            <p class="text-xs font-medium text-slate-500 mb-1">Total Saldo Dansos Tersisa:</p>
+                            <h3 class="text-3xl font-black text-slate-800 tracking-tight">
+                                Rp {{ number_format($totalSaldoDansos ?? 0, 0, ',', '.') }}
+                            </h3>
+                        </div>
                     </div>
 
-                    <!-- Kartu 2: Pemasukan Bulan Ini -->
-                    <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-100 shadow-sm">
-                        <div class="flex items-center gap-2 mb-2">
-                            <div class="w-6 h-6 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                    <div class="flex flex-col gap-2">
+                        <!-- GRID RINCIAN ARUS KAS DANSOS -->
+                        <div class="grid grid-cols-2 gap-3">
+                            
+                            <!-- Kartu 1: Bulan Kemarin -->
+                            <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-100 shadow-sm">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    </div>
+                                    <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Bulan Kemarin</span>
+                                </div>
+                                <p class="text-[10px] text-slate-400 mb-1 line-clamp-1">Total Dansos + Arisan</p>
+                                <h4 class="text-sm sm:text-base font-bold text-slate-800">
+                                    Rp {{ number_format($pemasukanBulanKemarin, 0, ',', '.') }}
+                                </h4>
                             </div>
-                            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Bulan Ini</span>
+
+                            <!-- Kartu 2: Pemasukan Bulan Ini -->
+                            <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-100 shadow-sm">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <div class="w-6 h-6 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                                    </div>
+                                    <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Bulan Ini</span>
+                                </div>
+                                <p class="text-[10px] text-slate-400 mb-1 line-clamp-1">Setoran kedua Humas</p>
+                                <h4 class="text-sm sm:text-base font-bold text-emerald-600">
+                                    + Rp {{ number_format($pemasukanBulanIni, 0, ',', '.') }}
+                                </h4>
+                            </div>
+
+                            <!-- Kartu 3: Pengeluaran Sakit & Takziah -->
+                            <a href="{{ url('/dansos/pengeluaran') }}" class="block bg-white rounded-2xl p-4 sm:p-5 border border-slate-100 shadow-sm hover:border-red-300 hover:shadow-md transition-all duration-200 group cursor-pointer">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <div class="w-6 h-6 rounded-full bg-red-50 flex items-center justify-center text-red-500 group-hover:bg-red-500 group-hover:text-white transition-colors">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                                    </div>
+                                    <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Pengeluaran</span>
+                                </div>
+                                <p class="text-[10px] text-slate-400 mb-1 line-clamp-1">Klik untuk kelola data</p>
+                                <h4 class="text-sm sm:text-base font-bold text-red-500">
+                                    - Rp {{ number_format($pengeluaranSakitTakziah, 0, ',', '.') }}
+                                </h4>
+                            </a>
+
+                            <!-- Kartu 4: Dana Talangan / Tabungan -->
+                            <a href="{{ route('dansos.talangan') }}" class="block bg-white rounded-2xl p-4 sm:p-5 border border-slate-100 shadow-sm hover:border-amber-300 hover:shadow-md transition-all duration-200 group cursor-pointer">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <div class="w-6 h-6 rounded-full bg-amber-50 flex items-center justify-center text-amber-500 group-hover:bg-amber-500 group-hover:text-white transition-colors">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                                    </div>
+                                    <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Talangan</span>
+                                </div>
+                                <p class="text-[10px] text-slate-400 mb-1 line-clamp-1">Klik untuk kelola data</p>
+                                <h4 class="text-sm sm:text-base font-bold text-slate-800">
+                                    Rp {{ number_format($talanganTabungan, 0, ',', '.') }}
+                                </h4>
+                            </a>
+
                         </div>
-                        <p class="text-[10px] text-slate-400 mb-1 line-clamp-1">Setoran kedua Humas</p>
-                        <h4 class="text-sm sm:text-base font-bold text-emerald-600">
-                            + Rp {{ number_format($pemasukanBulanIni, 0, ',', '.') }}
-                        </h4>
                     </div>
-
-                    <!-- Kartu 3: Pengeluaran Sakit & Takziah -->
-                    <a href="{{ url('/dansos/pengeluaran') }}" class="block bg-white rounded-2xl p-4 sm:p-5 border border-slate-100 shadow-sm hover:border-red-300 hover:shadow-md transition-all duration-200 group cursor-pointer">
-                        <div class="flex items-center gap-2 mb-2">
-                            <div class="w-6 h-6 rounded-full bg-red-50 flex items-center justify-center text-red-500 group-hover:bg-red-500 group-hover:text-white transition-colors">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
-                            </div>
-                            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Pengeluaran</span>
-                        </div>
-                        <p class="text-[10px] text-slate-400 mb-1 line-clamp-1">Klik untuk kelola data</p>
-                        <h4 class="text-sm sm:text-base font-bold text-red-500">
-                            - Rp {{ number_format($pengeluaranSakitTakziah, 0, ',', '.') }}
-                        </h4>
-                    </a>
-
-                    <!-- Kartu 4: Dana Talangan / Tabungan -->
-                    <a href="{{ route('dansos.talangan') }}" class="block bg-white rounded-2xl p-4 sm:p-5 border border-slate-100 shadow-sm hover:border-amber-300 hover:shadow-md transition-all duration-200 group cursor-pointer">
-                        <div class="flex items-center gap-2 mb-2">
-                            <div class="w-6 h-6 rounded-full bg-amber-50 flex items-center justify-center text-amber-500 group-hover:bg-amber-500 group-hover:text-white transition-colors">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                            </div>
-                            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Talangan</span>
-                        </div>
-                        <p class="text-[10px] text-slate-400 mb-1 line-clamp-1">Klik untuk kelola data</p>
-                        <h4 class="text-sm sm:text-base font-bold text-slate-800">
-                            Rp {{ number_format($talanganTabungan, 0, ',', '.') }}
-                        </h4>
-                    </a>
-
-                </div>
                 @endif
 
                 {{-- ========================================== --}}
@@ -206,7 +204,7 @@
 
                 {{-- ========================================== --}}
                 {{-- KHUSUS HUMAS                               --}}
-                {{-- ========================================== --}}`
+                {{-- ========================================== --}}
 
                 @if(Auth::user()->rt_akses == 'all')
                     <!-- KARTU GABUNGAN KHUSUS KETUA -->
@@ -662,13 +660,12 @@
             });
         </script>
         </form>
+        @endif
         </div>
 
         </div>
     </div>
 
-
-@endif
 <script>
     document.getElementById('tombol-notif')?.addEventListener('click', function() {
         if (!("Notification" in window)) {
@@ -682,5 +679,6 @@
                 alert('Izin ditolak. Anda tetap bisa melihat jadwal di halaman Beranda.');
         }
     });
+})
 </script>
 </x-app-layout>

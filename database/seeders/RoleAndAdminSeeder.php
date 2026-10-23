@@ -22,20 +22,26 @@ class RoleAndAdminSeeder extends Seeder
         ['name' => 'Bendahara', 'slug' => 'bendahara'],
         ['name' => 'Tata Usaha', 'slug' => 'tata-usaha'],
         ['name' => 'Petugas Laporan', 'slug' => 'petugas-laporan'],
+        ['name' => 'Petugas Persewaan','slug' => 'persewaan'],
         ['name' => 'Anggota', 'slug' => 'anggota'],
         ];
 
         foreach ($roles as $role) {
-            Role::create($role);
-        }
+        Role::updateOrCreate(
+            ['slug' => $role['slug']],
+            ['name' => $role['name']]
+        );
+    }
 
-        $admin = User::create([
+        $admin = User::updateOrCreate(
+        ['email' => 'ketua@abhipraya.com'], 
+        [
             'name' => 'Ketua Karang Taruna',
-        'email' => 'ketua@abhipraya.com',
-        'password' => Hash::make('ketua123'), // Ganti saat production
-        'phone' => '081234567890',
-        'is_active' => true,
-        ]);
+            'password' => Hash::make('ketua123'),
+            'phone' => '081234567890',
+            'is_active' => true,
+        ]
+    );
 
         $adminRole = Role::where('slug', 'super-admin') ->first();
         $admin->roles()->attach($adminRole->id);

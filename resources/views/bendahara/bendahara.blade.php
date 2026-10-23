@@ -25,6 +25,19 @@
         ->where('anggotas.rt', '24') 
         ->whereRaw("DATE_FORMAT(iurans.tanggal, '%Y-%m') = ?", [$bulanIni])
         ->sum('iurans.tabungan');
+
+        // 1. Ambil Saldo Kompensasi Bulan Kemarin (Semua saldo sebelum bulan ini)
+    $saldoKompensasiKemarin = DB::table('kompensasis')
+        ->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') < ?", [$bulanIni])
+        ->sum('nominal'); // Pastikan nama kolom 'nominal' sesuai dengan di database
+
+    // 2. Ambil Tambahan Saldo Kompensasi Bulan Ini
+    $tambahKompensasiBulanIni = DB::table('kompensasis')
+        ->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanIni])
+        ->sum('nominal');
+
+    // 3. Total Saldo Kompensasi Saat Ini
+    $totalKompensasi = $saldoKompensasiKemarin + $tambahKompensasiBulanIni;
 @endphp
 
 <x-app-layout>
@@ -45,7 +58,7 @@
             </div>
 
             <!-- Grid 4 Kartu Kas (Versi Publik) -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 items-start">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
                 
                 <!-- Kartu Tabungan -->
                 <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm relative">
@@ -58,7 +71,7 @@
                     </div>
 
                     <div>
-                        <p class="text-xs text-slate-500 font-medium mb-1">Total Saldo Terkumpul</p>
+                        <p class="text-xs text-slate-500 font-medium mb-1">Total Saldo Karang Taruna</p>
                         <h3 class="text-2xl font-black text-slate-800 tracking-tight">Rp {{ number_format($tabunganBulanIniTotal, 0, ',', '.') }}</h3>
                         
                         <!-- Teks yang bisa diklik -->
@@ -125,13 +138,41 @@
                         </div>
                         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">KOMPENSASI</span>
                     </div>
-                    <p class="text-xs text-slate-500 font-medium mb-1">Dana Pemasukan Luar</p>
-                    <h3 class="text-2xl font-black text-slate-900 tracking-tight">Rp {{ number_format($totalKompensasi, 0, ',', '.') }}</h3>
-                </div>
+                    <div>
+                        <p class="text-xs text-slate-500 font-medium mb-1">Dana Pemasukan Luar</p>
+                        <h3 class="text-2xl font-black text-slate-800 tracking-tight">Rp {{ number_format($totalKompensasi, 0, ',', '.') }}</h3>
 
+                        <!-- Teks yang bisa diklik (Warna Oranye) -->
+                        <button type="button" onclick="toggleRincianKompensasi()" class="text-xs font-bold text-orange-600 hover:text-orange-700 mt-2 flex items-center gap-1 cursor-pointer focus:outline-none transition-colors">
+                            <span id="teks-tombol-komp">Lihat Rincian</span>
+                            <!-- Ikon Panah -->
+                            <svg id="ikon-panah-komp" class="w-3 h-3 transition-transform duration-500 ease-in-out" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Area Rincian Kompensasi (Animasi Smooth Pakai Grid) -->
+                    <div id="rincian-kompensasi" class="grid transition-all duration-500 ease-in-out" style="grid-template-rows: 0fr;">
+                        <div class="overflow-hidden">
+                            <div class="border-t border-slate-100 pt-3 mt-4 flex flex-col justify-center space-y-2">
+                                <div class="flex justify-between items-center text-[11px] pb-1 border-b border-dashed border-slate-200">
+                                    <span class="text-slate-500">Saldo Bln Kemarin:</span>
+                                    <span class="font-bold text-slate-700">Rp {{ number_format($saldoKompensasiKemarin, 0, ',', '.') }}</span>
+                                </div>
+                                <div class="flex justify-between items-center text-[11px] pb-1 border-b border-dashed border-slate-200">
+                                    <span class="text-slate-500">Tambah Bln Ini:</span>
+                                    <span class="font-bold text-orange-600">+ Rp {{ number_format($tambahKompensasiBulanIni, 0, ',', '.') }}</span>
+                                </div>
+                                <div class="flex justify-between items-center text-[11px]">
+                                    <span class="text-slate-500">Total Saldo Ini:</span>
+                                    <span class="font-bold text-slate-800">Rp {{ number_format($totalKompensasi, 0, ',', '.') }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            
             </div>
-            
-            
 
         </div>
     </div>
@@ -156,5 +197,24 @@
                 teks.innerText = 'Lihat Rincian';
             }
         }
+
+        function toggleRincianKompensasi() {
+        // Ambil elemen berdasarkan ID khusus kompensasi
+        const rincianDiv = document.getElementById('rincian-kompensasi');
+        const ikon = document.getElementById('ikon-panah-komp');
+        const teks = document.getElementById('teks-tombol-komp');
+
+        // Putar ikon panah
+        ikon.classList.toggle('rotate-180');
+        
+        // Animasi buka-tutup pakai grid
+        if (rincianDiv.style.gridTemplateRows === '0fr') {
+            rincianDiv.style.gridTemplateRows = '1fr';
+            teks.innerText = 'Tutup Rincian';
+        } else {
+            rincianDiv.style.gridTemplateRows = '0fr';
+            teks.innerText = 'Lihat Rincian';
+        }
+}
     </script>
 </x-app-layout>

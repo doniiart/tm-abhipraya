@@ -14,9 +14,10 @@ class DemoUserSeeder extends Seeder
         // 1. Siapkan daftar akun demo yang mau dibuat
         $akunDemos = [
             ['name' => 'Mas Humas', 'email' => 'humas@demo.com', 'role' => 'humas'],
-            ['name' => 'Mbak Bendahara', 'email' => 'bendahara@demo.com', 'role' => 'bendahara'],
+            ['name' => 'Mas Bendahara', 'email' => 'bendahara@demo.com', 'role' => 'bendahara'],
             ['name' => 'Mbak Dansos', 'email' => 'dansos@demo.com', 'role' => 'dansos'],
             ['name' => 'Pak TU', 'email' => 'tu@demo.com', 'role' => 'tata-usaha'],
+            ['name' => 'Mas Persewaan', 'email' => 'sewa@demo.com', 'role' => 'persewaan'],
             ['name' => 'Anggota Biasa', 'email' => 'anggota@demo.com', 'role' => 'anggota'],
         ];
 

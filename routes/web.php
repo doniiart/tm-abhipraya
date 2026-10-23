@@ -12,6 +12,8 @@ use App\Models\Galeri;
 use App\Http\Controllers\HumasController;
 use App\Http\Controllers\PengumumanController;
 use App\Http\Controllers\DansosController;
+use App\Http\Controllers\AsetController;
+use App\Http\Controllers\SewaController;
 
 Route::get('/', function () {
     $settings = SettingWeb::first();
@@ -79,6 +81,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/persewaan/aset', [AsetController::class, 'index'])->name('aset.index');
+    Route::post('/persewaan/aset', [AsetController::class, 'store'])->name('aset.store');
+    Route::put('/persewaan/aset/{id}', [AsetController::class, 'update'])->name('aset.update');
+    Route::delete('/persewaan/aset/{id}', [AsetController::class, 'destroy'])->name('aset.destroy');
+    Route::get('/persewaan/sewa', [SewaController::class, 'index'])->name('sewa.index');
+    Route::post('/persewaan/sewa', [SewaController::class, 'store'])->name('sewa.store');
+    Route::put('/persewaan/sewa/{id}/kembalikan', [SewaController::class, 'kembalikan'])->name('sewa.kembalikan');
+    Route::delete('/persewaan/sewa/{id}', [SewaController::class, 'destroy'])->name('sewa.destroy');
 });
 
 Route::middleware(['auth', 'role:bendahara'])->prefix('admin')->group(function () {
@@ -119,6 +129,7 @@ Route::get('/laporan/humas', [HumasController::class, 'publicReport'])->name('la
 Route::get('/laporan/humas/riwayat', [\App\Http\Controllers\HumasController::class, 'riwayatArisan'])->name('humas.riwayat');
 Route::get('/laporan/dansos', [App\Http\Controllers\DansosController::class, 'laporanPublik'])->name('laporan.dansos');
 Route::post('/humas/arsipkan', [\App\Http\Controllers\HumasController::class, 'arsipkanKumpulan'])->name('humas.arsipkan');
+Route::get('/laporan/persewaan', [App\Http\Controllers\AsetController::class, 'laporanPublik'])->name('laporan.persewaan');
 
 
 Route::middleware(['auth'])->group(function () {
