@@ -208,7 +208,7 @@
 
                 @if(Auth::user()->rt_akses == 'all')
                     <!-- KARTU GABUNGAN KHUSUS KETUA -->
-                    <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-2xs mb-6">
+                    <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-2xs mb-2">
                         <div class="flex items-center justify-between mb-4">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-yellow-400 text-lg">
