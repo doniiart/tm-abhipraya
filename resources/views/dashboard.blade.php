@@ -199,6 +199,11 @@
                     </div>
                 @endif
 
+                {{-- ======== KHUSUS PETUGAS ARISAN ======== --}}
+                @if(auth()->user()->hasRole('arisan'))
+                    @include('arisan.dashboard')
+                @endif
+
                 <!-- Menu Manajemen Galeri (Hanya tampil untuk role tertentu) -->
     
 

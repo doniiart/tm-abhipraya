@@ -23,6 +23,7 @@ class RoleAndAdminSeeder extends Seeder
         ['name' => 'Tata Usaha', 'slug' => 'tata-usaha'],
         ['name' => 'Petugas Laporan', 'slug' => 'petugas-laporan'],
         ['name' => 'Petugas Persewaan','slug' => 'persewaan'],
+        ['name' => 'Petugas Arisan', 'slug' => 'arisan'],
         ['name' => 'Anggota', 'slug' => 'anggota'],
         ];
 

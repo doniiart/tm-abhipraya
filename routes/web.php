@@ -14,6 +14,7 @@ use App\Http\Controllers\PengumumanController;
 use App\Http\Controllers\DansosController;
 use App\Http\Controllers\AsetController;
 use App\Http\Controllers\SewaController;
+use App\Http\Controllers\ArisanController;
 
 Route::get('/', function () {
     $settings = SettingWeb::first();
@@ -98,6 +99,9 @@ Route::middleware('auth')->group(function () {
     // Kirim variabel $settings ke tampilan profil.blade.php
     return view('profil', compact('settings')); 
 });
+    Route::get('/arisan/dashboard', [ArisanController::class, 'index'])->name('arisan.dashboard');
+    Route::post('/arisan/simpan', [\App\Http\Controllers\ArisanController::class, 'simpanLaporan'])->name('arisan.simpan');
+    Route::get('/arisan/riwayat', [\App\Http\Controllers\ArisanController::class, 'riwayat'])->name('arisan.riwayat');
 });
 
 Route::middleware(['auth', 'role:bendahara'])->prefix('admin')->group(function () {

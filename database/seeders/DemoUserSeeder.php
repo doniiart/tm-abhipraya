@@ -19,6 +19,7 @@ class DemoUserSeeder extends Seeder
             ['name' => 'Pak TU', 'email' => 'tu@demo.com', 'role' => 'tata-usaha'],
             ['name' => 'Mas Persewaan', 'email' => 'sewa@demo.com', 'role' => 'persewaan'],
             ['name' => 'Anggota Biasa', 'email' => 'anggota@demo.com', 'role' => 'anggota'],
+            ['name' => 'Mbak Arisan', 'email' => 'arisan@demo.com', 'role' => 'arisan'],
         ];
 
         // 2. Proses pembuatan akun satu per satu
