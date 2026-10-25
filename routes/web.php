@@ -119,6 +119,10 @@ Route::middleware(['auth', 'role:bendahara'])->prefix('admin')->group(function (
     Route::get('/kompensasi', [\App\Http\Controllers\KompensasiController::class, 'index'])->name('bendahara.kompensasi');
     Route::post('/kompensasi', [\App\Http\Controllers\KompensasiController::class, 'store'])->name('bendahara.kompensasi.store');
     Route::post('/bendahara/pengeluaran', [\App\Http\Controllers\PengeluaranBendaharaController::class, 'store'])->name('bendahara.pengeluaran.store');
+    Route::post('/bendahara/kasmuda', [\App\Http\Controllers\KasMudaController::class, 'store'])->name('bendahara.kasmuda.store');
+    Route::post('/bendahara/kastua', [\App\Http\Controllers\KasTuaController::class, 'store'])->name('bendahara.kastua.store');
+    Route::get('/bendahara/kasmuda', [\App\Http\Controllers\KasMudaController::class, 'index'])->name('bendahara.kasmuda.index');
+    Route::get('/bendahara/kastua', [\App\Http\Controllers\KasTuaController::class, 'index'])->name('bendahara.kastua.index');
 });
 
 Route::middleware(['auth', 'role:petugas-laporan,tata-usaha'])->prefix('admin')->group(function () {
