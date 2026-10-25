@@ -102,7 +102,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/arisan/dashboard', [ArisanController::class, 'index'])->name('arisan.dashboard');
     Route::post('/arisan/simpan', [\App\Http\Controllers\ArisanController::class, 'simpanLaporan'])->name('arisan.simpan');
     Route::get('/arisan/riwayat', [\App\Http\Controllers\ArisanController::class, 'riwayat'])->name('arisan.riwayat');
-    Route::get('/laporan/arisan', [\App\Http\Controllers\ArisanController::class, 'laporanPublik'])->name('laporan.arisan.publik');
 
 });
 
@@ -148,6 +147,7 @@ Route::post('/humas/arsipkan', [\App\Http\Controllers\HumasController::class, 'a
 Route::get('/laporan/persewaan', [App\Http\Controllers\AsetController::class, 'laporanPublik'])->name('laporan.persewaan');
 Route::get('/kegiatan-sosial', [App\Http\Controllers\GaleriController::class, 'halamanPublik'])->name('kegiatan.publik');
 Route::get('/bendahara/pengeluaran', [\App\Http\Controllers\PengeluaranBendaharaController::class, 'index'])->name('bendahara.pengeluaran.index');
+Route::get('/laporan/arisan', [\App\Http\Controllers\ArisanController::class, 'laporanPublik'])->name('laporan.arisan.publik');
 
 
 Route::middleware(['auth'])->group(function () {

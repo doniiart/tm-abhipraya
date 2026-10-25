@@ -82,7 +82,7 @@
                     
                     <div class="pt-4 mt-2 border-t border-gray-400/20">
                         @auth
-                            <a href="{{ url('/dashboard') }}" class="block w-full py-3.5 bg-amber-400/90 hover:bg-amber-400 text-slate-900 rounded-2xl mb-3 shadow-[0_8px_20px_rgba(251,191,36,0.25)] hover:-translate-y-1 transition-all duration-300">
+                            <a href="{{ url('/dashboard') }}" onclick="validasiAnggota(event, this.href)" class="block w-full py-3.5 bg-amber-400/90 hover:bg-amber-400 text-slate-900 rounded-2xl mb-3 shadow-[0_8px_20px_rgba(251,191,36,0.25)] hover:-translate-y-1 transition-all duration-300">
                                 Buka Dashboard
                             </a>
                             <form method="POST" action="{{ route('logout') }}">

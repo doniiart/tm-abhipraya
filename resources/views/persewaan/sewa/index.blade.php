@@ -72,10 +72,10 @@
                                             
                                             <!-- Tombol Kembalikan (Hanya muncul jika status masih Disewa) -->
                                             @if($sewa->status == 'Disewa')
-                                                <form action="{{ route('sewa.kembalikan', $sewa->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Konfirmasi: Barang sudah dikembalikan oleh penyewa? Stok akan otomatis bertambah.');">
+                                                <form id="form-kembali-{{ $sewa->id }}" action="{{ route('sewa.kembalikan', $sewa->id) }}" method="POST" class="inline-block">
                                                     @csrf
                                                     @method('PUT')
-                                                    <button type="submit" class="px-3 py-1.5 bg-emerald-50 text-emerald-600 font-bold text-xs rounded-lg hover:bg-emerald-100 hover:text-emerald-700 transition" title="Tandai Dikembalikan">
+                                                    <button type="button" onclick="konfirmasiKembali({{ $sewa->id }})" class="text-xs font-bold text-emerald-600 bg-emerald-100 hover:bg-emerald-200 px-3 py-1.5 rounded-lg transition-colors">
                                                         Kembali
                                                     </button>
                                                 </form>
@@ -193,6 +193,30 @@
                 if (result.isConfirmed) {
                     // Eksekusi form berdasarkan ID yang diklik
                     document.getElementById('form-hapus-sewa-' + id).submit();
+                }
+            });
+        }
+    </script>
+
+    <!-- Panggil Library SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function konfirmasiKembali(id) {
+            Swal.fire({
+                title: 'Barang Sudah Kembali?',
+                text: "Stok inventaris akan otomatis bertambah setelah dikonfirmasi.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981', // Warna hijau emerald
+                cancelButtonColor: '#ef4444', // Warna merah
+                confirmButtonText: 'Ya, Sudah Kembali!',
+                cancelButtonText: 'Batal',
+                shape: 'rounded-3xl' // Membuat sudut melengkung modern
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Jika ditekan 'Ya', submit form secara otomatis
+                    document.getElementById('form-kembali-' + id).submit();
                 }
             });
         }

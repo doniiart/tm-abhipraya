@@ -67,7 +67,7 @@
                     Lihat Agenda
                     <svg class="w-5 h-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
                 </a>
-                <a href="/login" class="w-full sm:w-auto inline-flex justify-center items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white/20 hover:-translate-y-1 transition-all duration-300">
+                <a href="{{ route('login') }}" onclick="validasiAnggota(event, this.href)" class="w-full sm:w-auto inline-flex justify-center items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white/20 hover:-translate-y-1 transition-all duration-300">
                     Masuk Dashboard
                 </a>
             </div>
@@ -146,7 +146,7 @@
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-6">
     
     <!-- Kartu 1: Humas (Aktif / Bisa Diklik) -->
-    <a href="{{ route('laporan.humas') }}" class="group bg-white rounded-xl p-5 sm:p-6 border border-gray-100 shadow-sm hover:border-slate-300 hover:shadow-md active:scale-[0.98] transition-all duration-200 block">
+    <a href="{{ route('laporan.humas') }}" onclick="validasiAnggota(event, this.href)" class="group bg-white rounded-xl p-5 sm:p-6 border border-gray-100 shadow-sm hover:border-slate-300 hover:shadow-md active:scale-[0.98] transition-all duration-200 block">
         <div class="flex items-center justify-between mb-4">
             <div class="w-10 h-10 rounded-lg bg-slate-50 group-hover:bg-slate-900 group-hover:text-white flex items-center justify-center text-gray-700 font-semibold text-sm transition-colors duration-200">
                 📋
@@ -162,7 +162,7 @@
     </a>
 
     <!-- Kartu 2: Arisan -->
-    <a href="{{ route('laporan.arisan.publik') }}" class="block bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md hover:border-emerald-200 transition-all cursor-pointer relative group">
+    <a href="{{ route('laporan.arisan.publik') }}" onclick="validasiAnggota(event, this.href)" class="block bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md hover:border-emerald-200 transition-all cursor-pointer relative group">
     
         <!-- Tambahkan tulisan "Buka ->" di pojok kanan atas agar seragam dengan kartu lain -->
         <span class="absolute top-6 right-6 text-xs font-bold text-slate-400 group-hover:text-emerald-500 transition-colors">
@@ -180,7 +180,7 @@
     </a>
 
     <!-- Kartu 3: Dansos -->
-        <a href="{{ url('/laporan/dansos') }}" class="block bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md hover:border-amber-200 transition-all relative group cursor-pointer">
+        <a href="{{ url('/laporan/dansos') }}" onclick="validasiAnggota(event, this.href)" class="block bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md hover:border-amber-200 transition-all relative group cursor-pointer">
             
             <!-- Tulisan Buka -> di pojok kanan atas -->
             <div class="absolute top-6 right-6 text-xs text-slate-400 group-hover:text-amber-600 transition-colors flex items-center gap-1">
@@ -214,7 +214,7 @@
             <p class="text-xs text-slate-400">Kas Muda, Kas Tua, Tabungan, Kompensasi</p>
             
             <!-- Link area pemicu klik seluruh kartu (Opsional) -->
-            <a href="{{ route('public.bendahara') }}" class="absolute inset-0 z-10" aria-label="Buka Laporan Bendahara"></a>
+            <a href="{{ route('public.bendahara') }}" onclick="validasiAnggota(event, this.href)" class="absolute inset-0 z-10" aria-label="Buka Laporan Bendahara"></a>
         </div>
 
     <!-- Kartu 5: Persewaan -->
@@ -233,7 +233,7 @@
             <p class="text-xs text-slate-500 border-t border-slate-50 pt-3">Daftar Nama Aset & Persewaan</p>
 
             <!-- Link area pemicu klik seluruh kartu -->
-            <a href="{{ route('laporan.persewaan') }}" class="absolute inset-0 z-10" aria-label="Buka Laporan Persewaan"></a>
+            <a href="{{ route('laporan.persewaan') }}" onclick="validasiAnggota(event, this.href)" class="absolute inset-0 z-10" aria-label="Buka Laporan Persewaan"></a>
         </div>
 
 </div>
@@ -467,4 +467,60 @@
             });
         }
     </script>
+
+    <!-- Pastikan SweetAlert2 sudah terpasang, jika belum ada, tambahkan baris ini -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    function validasiAnggota(event, urlTujuan) {
+        event.preventDefault(); // Mencegah link langsung berpindah halaman
+
+        // 1. Cek apakah user sudah pernah memasukkan password sebelumnya
+        if (sessionStorage.getItem('anggota_valid') === 'sudah') {
+            window.location.href = urlTujuan; // Langsung izinkan masuk
+            return;
+        }
+
+        // 2. Jika belum, munculkan Pop-up SweetAlert untuk validasi
+        Swal.fire({
+            title: 'Akses Khusus Anggota',
+            text: 'Masukkan password Karang Taruna untuk melihat data:',
+            input: 'password',
+            inputPlaceholder: 'Masukkan password...',
+            inputAttributes: {
+                autocapitalize: 'off',
+                autocorrect: 'off'
+            },
+            icon: 'lock',
+            showCancelButton: true,
+            confirmButtonText: 'Buka Akses',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#eab308', // Warna kuning keemasan
+            cancelButtonColor: '#ef4444'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                
+                // UBAH "abhipraya2026" DENGAN PASSWORD YANG ANDA INGINKAN
+                if (result.value === 'abhiprayA2324') { 
+                    
+                    // Simpan status bahwa user ini sudah valid
+                    sessionStorage.setItem('anggota_valid', 'sudah');
+                    
+                    Swal.fire({
+                        title: 'Berhasil!',
+                        text: 'Akses dibuka. Selamat datang!',
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.href = urlTujuan; // Arahkan ke menu tujuan
+                    });
+                    
+                } else {
+                    Swal.fire('Gagal!', 'Password salah. Akses ditolak.', 'error');
+                }
+            }
+        });
+    }
+</script>
 @endsection
