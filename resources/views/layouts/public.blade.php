@@ -195,7 +195,7 @@
                     <h3 class="text-white font-bold text-lg mb-6">Peta Lokasi</h3>
                     <div id="peta-lokasi" class="bg-slate-800 rounded-2xl p-2 border border-slate-700 shadow-inner h-48 relative overflow-hidden group">
                         <!-- Google Maps Iframe (Ganti src dengan embed map asli sekretariat Anda) -->
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d967.4573578088114!2d110.74373498619279!3d-7.64215738566555!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sen!2sid!4v1792715831720!5m2!1sen!2sid" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d967.4574149480251!2d110.7439140961036!3d-7.642132165597441!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sen!2sid!4v1792943002876!5m2!1sen!2sid" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
                     </div>
                 </div>
                 
