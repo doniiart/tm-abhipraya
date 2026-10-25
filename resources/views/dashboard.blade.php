@@ -123,7 +123,7 @@
                         <div class="relative z-10">
                             <p class="text-xs font-medium text-slate-500 mb-1">Total Saldo Dansos Tersisa:</p>
                             <h3 class="text-3xl font-black text-slate-800 tracking-tight">
-                                Rp {{ number_format($totalSaldoDansos ?? 0, 0, ',', '.') }}
+                                Rp {{ number_format($totalSaldoDansos, 0, ',', '.') }}
                             </h3>
                         </div>
                     </div>

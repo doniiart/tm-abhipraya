@@ -20,7 +20,7 @@
                             ->first();
     $kekuranganBulanKemarin = $riwayatBulanLalu ? $riwayatBulanLalu->masih_kurang : 0; 
     
-    $targetHakTuanRumah = 290000; 
+    $targetHakTuanRumah = 285000; 
 
     // 3. LOGIKA JIKA KAS KOSONG VS KAS ADA ISINYA
     if ($totalHumas == 0) {
