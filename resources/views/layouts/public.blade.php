@@ -155,11 +155,11 @@
                 <div>
                     <h3 class="text-white font-bold text-lg mb-6">Layanan Sistem</h3>
                     <ul class="space-y-4">
-                        <li><a href="#" class="text-slate-400 hover:text-white transition-colors flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Arisan Rutin</a></li>
-                        <li><a href="{{ url('/laporan/dansos') }}" class="text-slate-400 hover:text-white transition-colors flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Dana Sosial (Dansos)</a></li>
-                        <li><a href="{{ route('public.bendahara') }}#" class="text-slate-400 hover:text-white transition-colors flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Laporan Bendahara</a></li>
-                        <li><a href="{{ route('laporan.persewaan') }}" class="text-slate-400 hover:text-white transition-colors flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Persewaan Inventaris</a></li>
-                        <li><a href="{{ route('laporan.humas') }}" class="text-slate-400 hover:text-white transition-colors flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Humas & Pengumuman</a></li>
+                        <li><a href="{{ route('laporan.arisan.publik') }}"onclick="validasiAnggota(event, this.href)" class="text-slate-400 hover:text-white transition-colors flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Arisan Rutin</a></li>
+                        <li><a href="{{ url('/laporan/dansos') }}"onclick="validasiAnggota(event, this.href)" class="text-slate-400 hover:text-white transition-colors flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Dana Sosial (Dansos)</a></li>
+                        <li><a href="{{ route('public.bendahara') }}#"onclick="validasiAnggota(event, this.href)" class="text-slate-400 hover:text-white transition-colors flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Laporan Bendahara</a></li>
+                        <li><a href="{{ route('laporan.persewaan') }}"onclick="validasiAnggota(event, this.href)" class="text-slate-400 hover:text-white transition-colors flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Persewaan Inventaris</a></li>
+                        <li><a href="{{ route('laporan.humas') }}"onclick="validasiAnggota(event, this.href)" class="text-slate-400 hover:text-white transition-colors flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Humas & Pengumuman</a></li>
                     </ul>
                 </div>
 
