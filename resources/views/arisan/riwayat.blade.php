@@ -8,8 +8,8 @@
                     <h2 class="text-2xl font-black text-slate-800">Buku Riwayat Arisan</h2>
                     <p class="text-sm text-slate-500">Rincian lengkap perhitungan laporan arisan bulan-bulan sebelumnya.</p>
                 </div>
-                <a href="{{ route('dashboard') }}" class="inline-flex items-center justify-center bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-xl text-sm font-bold hover:bg-slate-50 transition-colors">
-                    &larr; Kembali ke Dashboard
+                <a href="{{ url('/') }}#bagian-laporan" class="inline-flex items-center justify-center px-6 py-3 bg-white border border-slate-200 rounded-full text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors shadow-sm">
+                    &larr; Kembali ke Menu Utama
                 </a>
             </div>
 

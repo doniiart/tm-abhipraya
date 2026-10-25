@@ -14,7 +14,7 @@ class WebsiteSettingController extends Controller
         $user = auth()->user();
         
         // Batasi akses: Hanya Ketua, Humas, TU, Bendahara, dan Dansos yang boleh masuk
-        if (!($user->hasRole('super-admin') || $user->hasRole('humas') || $user->hasRole('tata-usaha') || $user->hasRole('bendahara') || $user->hasRole('dansos'))) {
+        if (!($user->hasRole('super-admin') || $user->hasRole('humas') || $user->hasRole('arisan') || $user->hasRole('bendahara') || $user->hasRole('dansos'))) {
             abort(403, 'Anda tidak memiliki hak akses ke halaman pengaturan web.');
         }
 

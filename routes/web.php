@@ -102,6 +102,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/arisan/dashboard', [ArisanController::class, 'index'])->name('arisan.dashboard');
     Route::post('/arisan/simpan', [\App\Http\Controllers\ArisanController::class, 'simpanLaporan'])->name('arisan.simpan');
     Route::get('/arisan/riwayat', [\App\Http\Controllers\ArisanController::class, 'riwayat'])->name('arisan.riwayat');
+    Route::get('/laporan/arisan', [\App\Http\Controllers\ArisanController::class, 'laporanPublik'])->name('laporan.arisan.publik');
+
 });
 
 Route::middleware(['auth', 'role:bendahara'])->prefix('admin')->group(function () {
@@ -117,6 +119,7 @@ Route::middleware(['auth', 'role:bendahara'])->prefix('admin')->group(function (
     })->name('bendahara.tabungan');
     Route::get('/kompensasi', [\App\Http\Controllers\KompensasiController::class, 'index'])->name('bendahara.kompensasi');
     Route::post('/kompensasi', [\App\Http\Controllers\KompensasiController::class, 'store'])->name('bendahara.kompensasi.store');
+    Route::post('/bendahara/pengeluaran', [\App\Http\Controllers\PengeluaranBendaharaController::class, 'store'])->name('bendahara.pengeluaran.store');
 });
 
 Route::middleware(['auth', 'role:petugas-laporan,tata-usaha'])->prefix('admin')->group(function () {
@@ -144,6 +147,7 @@ Route::get('/laporan/dansos', [App\Http\Controllers\DansosController::class, 'la
 Route::post('/humas/arsipkan', [\App\Http\Controllers\HumasController::class, 'arsipkanKumpulan'])->name('humas.arsipkan');
 Route::get('/laporan/persewaan', [App\Http\Controllers\AsetController::class, 'laporanPublik'])->name('laporan.persewaan');
 Route::get('/kegiatan-sosial', [App\Http\Controllers\GaleriController::class, 'halamanPublik'])->name('kegiatan.publik');
+Route::get('/bendahara/pengeluaran', [\App\Http\Controllers\PengeluaranBendaharaController::class, 'index'])->name('bendahara.pengeluaran.index');
 
 
 Route::middleware(['auth'])->group(function () {

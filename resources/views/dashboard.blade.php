@@ -32,6 +32,21 @@
         ->sum('nominal');
 
     $totalSaldoDansos = ($pemasukanBulanKemarin + $pemasukanBulanIni) - $pengeluaranSakitTakziah + $talanganTabungan;
+
+    // --- RUMUS UNTUK BENDAHARA (TABUNGAN) ---
+    $tabunganCandi = \App\Models\Iuran::where('status_riwayat', 'aktif')
+                    ->whereHas('anggota', function($q) { $q->where('rt', '23'); })
+                    ->sum('tabungan'); 
+
+    $tabunganGunung = \App\Models\Iuran::where('status_riwayat', 'aktif')
+                    ->whereHas('anggota', function($q) { $q->where('rt', '24'); })
+                    ->sum('tabungan');
+
+    $totalTabunganBulanIni = $tabunganCandi + $tabunganGunung;
+
+    // --- RUMUS UNTUK DANSOS ---
+    // Mengambil total semua uang dansos yang disetor humas malam ini
+    $dansosBulanIni = \App\Models\Iuran::where('status_riwayat', 'aktif')->sum('dansos');
 @endphp
 <x-app-layout>
     <!-- Header Halaman -->
@@ -141,7 +156,7 @@
                                 </div>
                                 <p class="text-[10px] text-slate-400 mb-1 line-clamp-1">Setoran kedua Humas</p>
                                 <h4 class="text-sm sm:text-base font-bold text-emerald-600">
-                                    + Rp {{ number_format($pemasukanBulanIni, 0, ',', '.') }}
+                                    + Rp {{ number_format($dansosBulanIni, 0, ',', '.') }}
                                 </h4>
                             </div>
 
@@ -333,7 +348,7 @@
                             <p class="text-sm text-gray-500 mt-1">{{ $settings->agenda_waktu ?? '-' }} • {{ $settings->agenda_lokasi ?? '-' }}</p>
                             
                             <!-- Tombol Ubah (sesuaikan route jika berbeda) -->
-                           @if(auth()->user()->hasRole('super-admin') || auth()->user()->hasRole('humas'))
+                           @if(auth()->user()->hasRole('super-admin') || auth()->user()->hasRole('arisan'))
                                 <a href="{{ route('admin.settings.edit') }}#agenda-form" class="inline-block mt-3 px-4 py-2 bg-gray-900 text-white text-sm font-bold rounded-lg hover:bg-gray-800 transition-colors">
                                     Ubah Jadwal Rapat
                                 </a>

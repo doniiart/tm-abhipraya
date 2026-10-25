@@ -19,7 +19,7 @@
                     @csrf
 
                     <!-- BAGIAN 1: KHUSUS KETUA & HUMAS -->
-                    @if(auth()->user()->hasRole('super-admin') || auth()->user()->hasRole('humas'))
+                    @if(auth()->user()->hasRole('ketua') || auth()->user()->hasRole('arisan') || auth()->user()->hasRole('super-admin'))
                     <div id="agenda-form" class="border-b border-gray-100 pb-6">
                         <h3 class="text-lg font-black text-gray-900 mb-1">📅 Pengaturan Agenda Kumpulan Pon</h3>
                         <p class="text-sm text-gray-500 mb-4">Dikelola oleh Petugas Humas & Ketua.</p>

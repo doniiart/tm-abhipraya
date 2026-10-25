@@ -36,6 +36,10 @@
 
     // 4. Hitung Total Tabungan Bulan Ini (Candi + Gunung)
     $tabunganBulanIniTotal = $tabunganCandiBulanIni + $tabunganGunungBulanIni;
+
+    // --- RUMUS SALDO BULAN KEMARIN (TABUNGAN) ---
+    // Mengambil semua tabungan dari bulan-bulan sebelumnya yang statusnya sudah 'selesai'
+    $saldoTabunganBulanKemarin = \App\Models\Iuran::where('status_riwayat', 'selesai')->sum('tabungan');
 @endphp
 
 <!-- Grid Utama: Dibagi 2 Kolom Besar (Sisi Kiri untuk Tabungan & Kompensasi, Sisi Kanan untuk Kas Muda & Kas Tua) -->
@@ -59,7 +63,7 @@
                 <!-- Sisi Kiri Tabungan: Total Saldo Bulan Ini -->
                 <div>
                     <p class="text-xs text-slate-500 font-medium mb-1">Tabungan Bulan Ini</p>
-                    <h3 class="text-2xl font-black text-slate-800 tracking-tight">Rp {{ number_format($tabunganBulanIniTotal ?? 0, 0, ',', '.') }}</h3>
+                    <h3 class="text-2xl font-black text-slate-800 tracking-tight">Rp {{ number_format($totalTabunganBulanIni - \App\Models\PengeluaranBendahara::sum('nominal'), 0, ',', '.') }}</h3>
                     <a href="{{ route('bendahara.tabungan') }}" class="text-xs font-bold text-emerald-600 hover:text-emerald-700 mt-2 inline-block">Rincian Tabungan &rarr;</a>
                 </div>
                 
@@ -67,15 +71,15 @@
                 <div class="border-t md:border-t-0 md:border-l border-slate-100 pt-3 md:pt-0 md:pl-4 flex flex-col justify-center space-y-2">
                     <div class="flex justify-between items-center text-[11px] pb-1 border-b border-dashed border-slate-200">
                         <span class="text-slate-500">Saldo Bulan Kemarin:</span>
-                        <span class="font-bold text-slate-700">Rp {{ number_format($tabunganBulanKemarin ?? 0, 0, ',', '.') }}</span>
+                        <span class="font-bold text-slate-700">Rp {{ number_format($saldoTabunganBulanKemarin, 0, ',', '.') }}</span>
                     </div>
                     <div class="flex justify-between items-center text-[11px] pb-1 border-b border-dashed border-slate-200">
                         <span class="text-slate-500">Setoran Candi:</span>
-                        <span class="font-bold text-emerald-600">+ Rp {{ number_format($tabunganCandiBulanIni ?? 0, 0, ',', '.') }}</span>
+                        <span class="font-bold text-emerald-600">+ Rp {{ number_format($tabunganCandi, 0, ',', '.') }}</span>
                     </div>
                     <div class="flex justify-between items-center text-[11px]">
                         <span class="text-slate-500">Setoran Gunung:</span>
-                        <span class="font-bold text-emerald-600">+ Rp {{ number_format($tabunganGunungBulanIni ?? 0, 0, ',', '.') }}</span>
+                        <span class="font-bold text-emerald-600">+ Rp {{ number_format($tabunganGunung, 0, ',', '.') }}</span>
                     </div>
                 </div>
             </div>
@@ -169,7 +173,103 @@
             </div>
         </div>
 
+        <!-- 5. KARTU PENGELUARAN BENDAHARA -->
+        <div onclick="bukaModalPengeluaran()" class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm relative mt-4 hover:shadow-md hover:border-red-200 transition-all cursor-pointer group">
+            <div class="flex justify-between items-start mb-4">
+                <div class="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-500 group-hover:scale-110 transition-transform">
+                    <!-- Ikon Pengeluaran -->
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-2">Pengeluaran</span>
+            </div>
+            
+            <div>
+                <p class="text-xs text-slate-500 font-medium mb-1">Total Pengeluaran</p>
+                <h3 class="text-2xl font-black text-slate-800 tracking-tight">
+                    <!-- Menampilkan total uang keluar secara otomatis -->
+                    Rp {{ number_format(\App\Models\PengeluaranBendahara::sum('nominal'), 0, ',', '.') }}
+                </h3>
+                
+                <!-- MEMUNCULKAN DAFTAR CATATAN PENGELUARAN DI SINI -->
+                <div class="mt-3 space-y-3">
+                    <!-- Teks Perintah Sesuai Instruksi -->
+                    <p class="text-xs font-bold text-red-500 mt-2">&plusmn; Klik area ini untuk mencatat pengeluaran</p>
+                    
+                    <!-- TOMBOL KE HALAMAN RINCIAN PENGELUARAN -->
+                    <!-- event.stopPropagation() mencegah pop-up modal ikut terbuka saat tombol ini diklik -->
+                    <a href="{{ route('bendahara.pengeluaran.index') }}" onclick="event.stopPropagation()" class="mt-4 block text-center text-xs font-bold text-indigo-500 hover:text-indigo-600 bg-indigo-50 py-2.5 rounded-xl border border-indigo-100 transition-colors">
+                        Lihat Rincian Pengeluaran &rarr;
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+
     </div>
 
     
 </div>
+
+<div id="modalPengeluaran" class="fixed inset-0 z-50 hidden">
+    <!-- Background Gelap & Blur -->
+    <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="tutupModalPengeluaran()"></div>
+    
+    <!-- Kotak Form -->
+    <div class="fixed inset-0 z-10 overflow-y-auto">
+        <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+            <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-slate-100">
+                
+                <form action="{{ route('bendahara.pengeluaran.store') }}" method="POST">
+                    @csrf
+                    <div class="bg-white px-6 pb-6 pt-8 sm:p-8">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center text-red-500">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-black text-slate-800">Catat Pengeluaran</h3>
+                                <p class="text-sm text-slate-500">Masukkan rincian dana yang keluar.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-5">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Hari / Tanggal</label>
+                                <input type="date" name="tanggal" required class="w-full rounded-xl border-slate-200 shadow-sm focus:border-red-500 focus:ring focus:ring-red-200 transition-all text-slate-700">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Nominal (Rp)</label>
+                                <input type="number" name="nominal" required class="w-full rounded-xl border-slate-200 shadow-sm focus:border-red-500 focus:ring focus:ring-red-200 transition-all text-slate-700" placeholder="Contoh: 150000">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Untuk Keperluan</label>
+                                <textarea name="keperluan" required class="w-full rounded-xl border-slate-200 shadow-sm focus:border-red-500 focus:ring focus:ring-red-200 transition-all text-slate-700" rows="3" placeholder="Contoh: Pembelian buku kas dan bolpoin"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tombol Aksi -->
+                    <div class="bg-slate-50 px-6 py-4 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 rounded-b-3xl">
+                        <button type="button" onclick="tutupModalPengeluaran()" class="w-full sm:w-auto px-6 py-2.5 text-sm font-bold text-slate-600 bg-white border border-slate-200 rounded-xl shadow-sm hover:bg-slate-50 transition-colors">
+                            Batal
+                        </button>
+                        <button type="submit" class="w-full sm:w-auto px-6 py-2.5 text-sm font-bold text-white bg-red-600 rounded-xl shadow-sm hover:bg-red-500 hover:shadow-md transition-all">
+                            Simpan Pengeluaran
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function bukaModalPengeluaran() {
+        document.getElementById('modalPengeluaran').classList.remove('hidden');
+    }
+
+    function tutupModalPengeluaran() {
+        document.getElementById('modalPengeluaran').classList.add('hidden');
+    }
+</script>

@@ -36,6 +36,7 @@ class ArisanController extends Controller
         // Menghitung defisit baru (misal target hak tuan rumah adalah Rp 290.000)
         $targetHakTuanRumah = 290000; 
         $masihKurangBulanIni = $targetHakTuanRumah - $arisanMendapatkan; // Rp 100.000
+        $daftarAnggota = \App\Models\Anggota::pluck('nama');
 
         return view('arisan.dashboard', compact(
             'arisanCandi', 
@@ -45,7 +46,8 @@ class ArisanController extends Controller
             'sisaSetelahDansos',
             'kekuranganBulanKemarin',
             'arisanMendapatkan',
-            'masihKurangBulanIni'
+            'masihKurangBulanIni',
+            'daftarAnggota'
         ));
     }
 
@@ -99,5 +101,29 @@ class ArisanController extends Controller
         // Mengambil semua data riwayat dari yang paling baru ke yang paling lama
         $riwayats = \App\Models\RiwayatArisan::orderBy('tanggal', 'desc')->get();
         return view('arisan.riwayat', compact('riwayats'));
+    }
+
+    public function laporanPublik()
+    {
+        // 1. Ambil Data
+        $arisanCandi = \App\Models\Iuran::where('status_riwayat', 'aktif')->whereHas('anggota', function($q){ $q->where('rt', '23'); })->sum('arisan');
+        $arisanGunung = \App\Models\Iuran::where('status_riwayat', 'aktif')->whereHas('anggota', function($q){ $q->where('rt', '24'); })->sum('arisan');
+        $totalHumas = $arisanCandi + $arisanGunung;
+
+        // 2. Cek riwayat lalu & hitung
+        $riwayatBulanLalu = \App\Models\RiwayatArisan::where('status', 'selesai')->orderBy('tanggal', 'desc')->first();
+        $kekuranganBulanKemarin = $riwayatBulanLalu ? $riwayatBulanLalu->masih_kurang : 0;
+        $targetHakTuanRumah = 290000;
+
+        if ($totalHumas == 0) {
+            $potonganDansos = 0; $sisaSetelahDansos = 0; $arisanMendapatkan = 0; $masihKurangBulanIni = 0;
+        } else {
+            $potonganDansos = 25000;
+            $sisaSetelahDansos = $totalHumas - $potonganDansos;
+            $arisanMendapatkan = $sisaSetelahDansos - $kekuranganBulanKemarin;
+            $masihKurangBulanIni = max(0, $targetHakTuanRumah - $arisanMendapatkan);
+        }
+
+        return view('arisan.laporan_publik', compact('totalHumas', 'potonganDansos', 'sisaSetelahDansos', 'kekuranganBulanKemarin', 'arisanMendapatkan', 'masihKurangBulanIni', 'targetHakTuanRumah'));
     }
 }

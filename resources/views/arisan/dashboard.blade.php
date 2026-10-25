@@ -12,6 +12,8 @@
 
     $totalHumas = $arisanCandi + $arisanGunung;
 
+    $daftarAnggota = \App\Models\Anggota::pluck('nama');
+
     // 2. CEK RIWAYAT BULAN LALU
     $riwayatBulanLalu = \App\Models\RiwayatArisan::where('status', 'selesai')
                             ->orderBy('tanggal', 'desc')
@@ -103,13 +105,13 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Tuan Rumah Malam Ini</label>
-                        <input type="text" name="tempat" required placeholder="Contoh: Rumah Mbak Saripla" class="w-full rounded-xl border-slate-200 text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                        <input type="text" name="tempat" required placeholder="Contoh: Rumah Mas Ketua" class="w-full rounded-xl border-slate-200 text-sm focus:ring-emerald-500 focus:border-emerald-500">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Target Hak (Kesepakatan)</label>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Yang Seharusnya</label>
                         <div class="relative">
                             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">Rp</span>
-                            <input type="number" name="target_hak" placeholder="150000" class="w-full rounded-xl border-slate-200 pl-10 text-sm font-bold text-slate-800 focus:ring-emerald-500 focus:border-emerald-500">
+                            <input type="number" name="target_hak" placeholder="Masukkan nominal" class="w-full rounded-xl border-slate-200 pl-10 text-sm font-bold text-slate-800 focus:ring-emerald-500 focus:border-emerald-500">
                         </div>
                     </div>
                 </div>
@@ -138,7 +140,7 @@
         <h2 class="text-2xl font-black mb-2">Arisan Selanjutnya Ditempat?</h2>
         <p class="text-indigo-200 text-sm max-w-md">Kocok arisan secara digital! Sistem akan mengacak otomatis anggota yang belum pernah mendapat giliran.</p>
     </div>
-    <button type="button" class="mt-6 sm:mt-0 bg-white text-indigo-700 font-black px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2">
+    <button type="button" onclick="mulaiUndian()" class="mt-6 sm:mt-0 bg-white text-indigo-700 font-black px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
         Mulai Undian
     </button>
@@ -174,6 +176,70 @@
             if (result.isConfirmed) {
                 // Submit form otomatis jika klik Ya
                 document.getElementById('formSimpanArisan').submit();
+            }
+        });
+    }
+</script>
+
+<script>
+    // Mengambil data array anggota dari Controller PHP ke JavaScript
+    const dataAnggota = @json($daftarAnggota);
+
+    function mulaiUndian() {
+        // Cek jika data anggota kosong
+        if(dataAnggota.length === 0) {
+            Swal.fire('Data Kosong', 'Belum ada daftar anggota di sistem.', 'error');
+            return;
+        }
+
+        let timerInterval;
+        let pemenangAkhir = '';
+
+        // Tampilkan Popup Animasi Mengacak
+        Swal.fire({
+            title: 'Kocok Arisan...',
+            html: `
+                <div class="my-6">
+                    <p class="text-sm text-slate-500 mb-2">Mengacak nama tuan rumah berikutnya:</p>
+                    <div id="namaAcak" class="text-3xl sm:text-4xl font-black text-indigo-600 h-16 flex items-center justify-center">
+                        Siap-siap!
+                    </div>
+                </div>
+            `,
+            timer: 3500, // Berputar selama 3.5 detik
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            didOpen: () => {
+                const b = Swal.getHtmlContainer().querySelector('#namaAcak');
+                // Bikin efek nama berganti-ganti sangat cepat (setiap 50 milidetik)
+                timerInterval = setInterval(() => {
+                    const randomIndex = Math.floor(Math.random() * dataAnggota.length);
+                    b.textContent = dataAnggota[randomIndex];
+                }, 50);
+            },
+            willClose: () => {
+                clearInterval(timerInterval);
+                // Tentukan satu pemenang mutlak di akhir
+                pemenangAkhir = dataAnggota[Math.floor(Math.random() * dataAnggota.length)];
+            }
+        }).then((result) => {
+            // Tampilkan hasil akhir pemenangnya
+            if (result.dismiss === Swal.DismissReason.timer) {
+                Swal.fire({
+                    title: '🎉 Selamat! 🎉',
+                    html: `
+                        <p class="text-slate-600 mb-4">Arisan bulan depan akan bertempat di rumah:</p>
+                        <div class="bg-emerald-50 border border-emerald-200 rounded-2xl py-6 px-4 mb-2">
+                            <span class="text-3xl font-black text-emerald-600 uppercase tracking-widest">${pemenangAkhir}</span>
+                        </div>
+                    `,
+                    icon: 'success',
+                    confirmButtonText: 'Tutup & Selesai',
+                    confirmButtonColor: '#10b981',
+                    allowOutsideClick: false,
+                    backdrop: `rgba(0,0,0,0.6)`
+                });
             }
         });
     }

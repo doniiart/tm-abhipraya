@@ -162,16 +162,22 @@
     </a>
 
     <!-- Kartu 2: Arisan -->
-    <div class="bg-white rounded-xl p-5 sm:p-6 border border-gray-100 shadow-sm hover:border-gray-300 hover:shadow-md transition-all duration-200">
-        <div class="flex items-center justify-between mb-4">
-            <div class="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center text-gray-700 font-semibold text-sm">
-                💰
-            </div>
+    <a href="{{ route('laporan.arisan.publik') }}" class="block bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md hover:border-emerald-200 transition-all cursor-pointer relative group">
+    
+        <!-- Tambahkan tulisan "Buka ->" di pojok kanan atas agar seragam dengan kartu lain -->
+        <span class="absolute top-6 right-6 text-xs font-bold text-slate-400 group-hover:text-emerald-500 transition-colors">
+            Buka &rarr;
+        </span>
+
+        <div class="w-10 h-10 bg-emerald-50 rounded-full flex items-center justify-center mb-4">
+            <!-- Ikon Arisan Anda (Biarkan kode SVG/Ikon yang sudah ada) -->
+            💰
         </div>
-        <h3 class="text-xl font-bold text-gray-900 tracking-tight">Arisan</h3>
-        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mt-0.5">Laporan Arisan</p>
-        <p class="text-[11px] text-gray-400 mt-3 pt-3 border-t border-gray-50">Rekap iuran arisan rutin</p>
-    </div>
+        
+        <h3 class="font-black text-slate-800 text-lg mb-1">Arisan</h3>
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Laporan Arisan</p>
+        <p class="text-xs text-slate-400">Rekap iuran arisan rutin</p>
+    </a>
 
     <!-- Kartu 3: Dansos -->
         <a href="{{ url('/laporan/dansos') }}" class="block bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md hover:border-amber-200 transition-all relative group cursor-pointer">

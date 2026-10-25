@@ -38,6 +38,9 @@
 
     // 3. Total Saldo Kompensasi Saat Ini
     $totalKompensasi = $saldoKompensasiKemarin + $tambahKompensasiBulanIni;
+
+    // RUMUS PENARIK TOTAL PENGELUARAN
+    $totalPengeluaranBendahara = \App\Models\PengeluaranBendahara::sum('nominal');
 @endphp
 
 <x-app-layout>
@@ -58,7 +61,7 @@
             </div>
 
             <!-- Grid 4 Kartu Kas (Versi Publik) -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 items-start">
                 
                 <!-- Kartu Tabungan -->
                 <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm relative">
@@ -72,7 +75,7 @@
 
                     <div>
                         <p class="text-xs text-slate-500 font-medium mb-1">Total Saldo Karang Taruna</p>
-                        <h3 class="text-2xl font-black text-slate-800 tracking-tight">Rp {{ number_format($tabunganBulanIniTotal, 0, ',', '.') }}</h3>
+                        <h3 class="text-2xl font-black text-slate-800 tracking-tight">Rp {{ number_format($totalTabungan - \App\Models\PengeluaranBendahara::sum('nominal'), 0, ',', '.') }}</h3>
                         
                         <!-- Teks yang bisa diklik -->
                         <button type="button" onclick="toggleRincian()" class="text-xs font-bold text-emerald-600 hover:text-emerald-700 mt-2 flex items-center gap-1 cursor-pointer focus:outline-none transition-colors">
@@ -171,6 +174,30 @@
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <!-- KARTU PENGELUARAN (MODE PUBLIK) -->
+                <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm relative">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-500">
+                            <!-- Ikon Pengeluaran -->
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-2">Pengeluaran</span>
+                    </div>
+                    
+                    <div>
+                        <p class="text-xs text-slate-500 font-medium mb-1">Total Pengeluaran</p>
+                        <h3 class="text-2xl font-black text-slate-800 tracking-tight">
+                            Rp {{ number_format($totalPengeluaranBendahara, 0, ',', '.') }}
+                        </h3>
+                        
+                        <!-- TOMBOL LIHAT RINCIAN UNTUK WARGA -->
+                        <a href="{{ route('bendahara.pengeluaran.index') }}" class="mt-4 block text-center text-xs font-bold text-indigo-500 hover:text-indigo-600 bg-indigo-50 py-2.5 rounded-xl border border-indigo-100 transition-colors">
+                            Lihat Rincian Pengeluaran &rarr;
+                        </a>
+                    </div>
+                </div>
             
             </div>
 
