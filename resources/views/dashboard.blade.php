@@ -15,8 +15,6 @@
     $dansosBulanIniTotal = DB::table('iurans')
         ->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanIni])
         ->sum('dansos');
-
-    $bulanIni = \Carbon\Carbon::now()->format('Y-m');
     
     $pemasukanBulanIni = DB::table('iurans')->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanIni])->sum('dansos');
     $pemasukanBulanKemarin = DB::table('iurans')->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') < ?", [$bulanIni])->sum(DB::raw('dansos + arisan'));
@@ -31,7 +29,9 @@
         ->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanIni])
         ->sum('nominal');
 
-    $totalSaldoDansos = ($pemasukanBulanKemarin + $pemasukanBulanIni) - $pengeluaranSakitTakziah + $talanganTabungan;
+         // Mengambil total semua uang dansos yang disetor humas malam ini
+    $dansosBulanIni = \App\Models\Iuran::where('status_riwayat', 'aktif')->sum('dansos');
+    $totalSaldoDansos = $pemasukanBulanKemarin + $dansosBulanIni - $pengeluaranSakitTakziah + $talanganTabungan;
 
     // --- RUMUS UNTUK BENDAHARA (TABUNGAN) ---
     $tabunganCandi = \App\Models\Iuran::where('status_riwayat', 'aktif')
@@ -45,8 +45,11 @@
     $totalTabunganBulanIni = $tabunganCandi + $tabunganGunung;
 
     // --- RUMUS UNTUK DANSOS ---
-    // Mengambil total semua uang dansos yang disetor humas malam ini
-    $dansosBulanIni = \App\Models\Iuran::where('status_riwayat', 'aktif')->sum('dansos');
+
+    // RUMUS REKAPITULASI HUMAS (CANDI & GUNUNG)
+    $totalArisanHumas = \App\Models\Iuran::where('status_riwayat', 'aktif')->sum('arisan');
+    $totalTabunganHumas = \App\Models\Iuran::where('status_riwayat', 'aktif')->sum('tabungan');
+    $totalDansosHumas = \App\Models\Iuran::where('status_riwayat', 'aktif')->sum('dansos');
 @endphp
 <x-app-layout>
     <!-- Header Halaman -->
@@ -248,15 +251,15 @@
                         <div class="grid grid-cols-3 gap-4 pt-4 border-t border-slate-100 text-center sm:text-left">
                             <div>
                                 <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Arisan</p>
-                                <p class="text-lg font-extrabold text-slate-800 mt-0.5">Rp {{ number_format($arisanBulanIniTotal, 0, ',', '.') }}</p>
+                                <p class="text-lg font-extrabold text-slate-800 mt-0.5">Rp {{ number_format($totalArisanHumas, 0, ',', '.') }}</p>
                             </div>
                             <div>
                                 <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Tabungan</p>
-                                <p class="text-lg font-extrabold text-slate-800 mt-0.5">Rp {{ number_format($tabunganBulanIniTotal, 0, ',', '.') }}</p>
+                                <p class="text-lg font-extrabold text-slate-800 mt-0.5">Rp {{ number_format($totalTabunganHumas, 0, ',', '.') }}</p>
                             </div>
                             <div>
                                 <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Dansos</p>
-                                <p class="text-lg font-extrabold text-slate-800 mt-0.5">Rp {{ number_format($dansosBulanIniTotal, 0, ',', '.') }}</p>
+                                <p class="text-lg font-extrabold text-slate-800 mt-0.5">Rp {{ number_format($totalDansosHumas, 0, ',', '.') }}</p>
                             </div>
                         </div>
                     </div>
@@ -543,7 +546,9 @@
                             <td class="py-3 px-4 text-center">
                                         @php
                                             // 1. Cari tanggal kumpulan yang paling terakhir tersimpan di sistem
-                                            $tanggalTerakhir = \App\Models\Iuran::max('tanggal');
+                                            $tanggalTerakhir = \App\Models\Iuran::whereHas('anggota', function($q) use ($anggota) {
+                                                $q->where('rt', $anggota->rt);
+                                            })->max('tanggal');
                                             
                                             // 2. Cek apakah anggota ini menyetor iuran di tanggal terakhir tersebut
                                             $cekIuran = \App\Models\Iuran::where('anggota_id', $anggota->id)
@@ -556,17 +561,21 @@
 
                                         @if($Double)
                                             <!-- Jika Double: Otomatis pilih 2x dan beri warna merah sebagai pengingat -->
-                                            <select name="kelipatan[{{ $anggota->id }}]" class="text-xs font-bold rounded-lg border-red-300 bg-red-50 text-red-700 py-1 px-2 focus:ring-red-500 focus:border-red-500 shadow-sm animate-pulse">
+                                            <select name="kelipatan[{{ $anggota->id }}]" class="text-xs font-bold rounded-lg border-red-300 bg-red-50 text-red-700 py-1 px-2 ...">
                                                 <option value="1">1x</option>
-                                                <option value="2" selected>2x (Double)</option>
+                                                <option value="2" selected>2x</option>
                                                 <option value="3">3x</option>
+                                                <option value="4">4x</option>
+                                                <option value="5">5x</option>
                                             </select>
                                         @else
                                             <!-- Jika Normal: Otomatis pilih 1x -->
                                             <select name="kelipatan[{{ $anggota->id }}]" class="text-xs font-bold rounded-lg border-slate-200 py-1 px-2 focus:ring-red-500 focus:border-red-500">
-                                                <option value="1" selected>1x (Normal)</option>
+                                                <option value="1" selected>1x</option>
                                                 <option value="2">2x</option>
                                                 <option value="3">3x</option>
+                                                <option value="4">4x</option>
+                                                <option value="5">5x</option>
                                             </select>
                                         @endif
                                     </td>
@@ -626,17 +635,21 @@
 
                                 @if($Double)
                                     <!-- Jika Double: Otomatis pilih 2x dan beri warna merah -->
-                                    <select name="kelipatan[{{ $anggota->id }}]" class="text-xs font-bold rounded-lg border-red-300 bg-red-50 text-red-700 py-1 px-2 focus:ring-red-500 focus:border-red-500 shadow-sm animate-pulse">
+                                    <select name="kelipatan[{{ $anggota->id }}]" class="text-xs font-bold rounded-lg border-red-300 bg-red-50 text-red-700 py-1 px-2 ...">
                                         <option value="1">1x</option>
-                                        <option value="2" selected>2x (Double)</option>
+                                        <option value="2" selected>2x</option>
                                         <option value="3">3x</option>
+                                        <option value="4">4x</option>
+                                        <option value="5">5x</option>
                                     </select>
                                 @else
                                     <!-- Jika Normal: Otomatis pilih 1x -->
-                                    <select name="kelipatan[{{ $anggota->id }}]" class="text-xs font-bold rounded-lg border-slate-200 py-1 px-2 focus:ring-red-500 focus:border-red-500">
-                                        <option value="1" selected>1x (Normal)</option>
+                                    <select name="kelipatan[{{ $anggota->id }}]" class="text-xs font-bold rounded-lg border-slate-200 py-1 px-2 ...">
+                                        <option value="1" selected>1x</option>
                                         <option value="2">2x</option>
                                         <option value="3">3x</option>
+                                        <option value="4">4x</option>
+                                        <option value="5">5x</option>
                                     </select>
                                 @endif
                             </td>

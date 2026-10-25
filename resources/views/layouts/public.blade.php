@@ -174,7 +174,7 @@
                             </div>
                             <div>
                                 <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Alamat Sekretariat</p>
-                                <p class="text-sm text-slate-300">Dukuh Candirejo & Gunungrejo,<br>Wonosari, Kabupaten Klaten, Jawa Tengah</p>
+                                <p class="text-sm text-slate-300">Dukuh Candirejo & Gunungrejo, Jelobo,<br>Wonosari, Kabupaten Klaten, Jawa Tengah</p>
                             </div>
                         </div>
                         <!-- Box Telepon -->
@@ -184,7 +184,7 @@
                             </div>
                             <div>
                                 <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">WhatsApp / Telepon</p>
-                                <p class="text-sm text-slate-300">Mohon maaf belum tersedia</p>
+                                <p class="text-sm text-slate-300">Segera Hadir</p>
                             </div>
                         </div>
                     </div>

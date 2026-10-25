@@ -1,64 +1,50 @@
 @php
-$saldoKompensasiKemarin = DB::table('kompensasis')
-->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') < ?", [$bulanIni])
-    ->sum('nominal'); // Sesuaikan 'nominal' dan 'tanggal' jika nama kolomnya beda
-
-    // 2. Ambil Tambahan Saldo Kompensasi Bulan Ini
-    $tambahKompensasiBulanIni = DB::table('kompensasis')
-    ->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanIni])
-    ->sum('nominal');
-
-    // 3. Total Saldo Kompensasi Saat Ini
-    $totalKompensasi = $saldoKompensasiKemarin + $tambahKompensasiBulanIni;
-
+    // 1. PENDEKLARASIAN WAKTU HARUS DI PALING ATAS
     $bulanIni = \Carbon\Carbon::now()->format('Y-m');
     $bulanKemarin = \Carbon\Carbon::now()->subMonth()->format('Y-m');
 
-    // 1. Ambil Total Tabungan Bulan Kemarin (Gabungan)
-    $tabunganBulanKemarin = DB::table('iurans')
-    ->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanKemarin])
-    ->sum('tabungan');
+    // 2. RUMUS KOMPENSASI
+    $saldoKompensasiKemarin = \DB::table('kompensasis')
+        ->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') < ?", [$bulanIni])
+        ->sum('nominal');
+        
+    $tambahKompensasiBulanIni = \DB::table('kompensasis')
+        ->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanIni])
+        ->sum('nominal');
+        
+    $totalKompensasi = $saldoKompensasiKemarin + $tambahKompensasiBulanIni;
 
-    // 2. Ambil Setoran Tabungan Candi Bulan Ini
-    // Sesuaikan 'wilayah' dengan nama kolom di database Mas Doni (misal: 'wilayah', 'rt', atau 'kategori')
-    $tabunganCandiBulanIni = DB::table('iurans')
-    ->join('anggotas', 'iurans.anggota_id', '=', 'anggotas.id')
-    ->where('anggotas.rt', '23')
-    ->whereRaw("DATE_FORMAT(iurans.tanggal, '%Y-%m') = ?", [$bulanIni])
-    ->sum('iurans.tabungan');
+    // 3. RUMUS TABUNGAN (DARI HUMAS)
+    $totalTabungan = \App\Models\Iuran::sum('tabungan') ?? 0; // Total keseluruhan tabungan
 
-    // 3. Ambil Setoran Tabungan Gunung Bulan Ini
-    $tabunganGunungBulanIni = DB::table('iurans')
-    ->join('anggotas', 'iurans.anggota_id', '=', 'anggotas.id')
-    ->where('anggotas.rt', '24')
-    ->whereRaw("DATE_FORMAT(iurans.tanggal, '%Y-%m') = ?", [$bulanIni])
-    ->sum('iurans.tabungan');
-
-    // 4. Hitung Total Tabungan Bulan Ini (Candi + Gunung)
+    $tabunganBulanKemarin = \DB::table('iurans')
+        ->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanKemarin])
+        ->sum('tabungan');
+        
+    $tabunganCandiBulanIni = \DB::table('iurans')
+        ->join('anggotas', 'iurans.anggota_id', '=', 'anggotas.id')
+        ->where('anggotas.rt', '23')
+        ->whereRaw("DATE_FORMAT(iurans.tanggal, '%Y-%m') = ?", [$bulanIni])
+        ->sum('iurans.tabungan');
+        
+    $tabunganGunungBulanIni = \DB::table('iurans')
+        ->join('anggotas', 'iurans.anggota_id', '=', 'anggotas.id')
+        ->where('anggotas.rt', '24')
+        ->whereRaw("DATE_FORMAT(iurans.tanggal, '%Y-%m') = ?", [$bulanIni])
+        ->sum('iurans.tabungan');
+        
     $tabunganBulanIniTotal = $tabunganCandiBulanIni + $tabunganGunungBulanIni;
 
-    // --- RUMUS SALDO BULAN KEMARIN (TABUNGAN) ---
-    // Mengambil semua tabungan dari bulan-bulan sebelumnya yang statusnya sudah 'selesai'
-    $saldoTabunganBulanKemarin = \App\Models\Iuran::where('status_riwayat', 'selesai')->sum('tabungan');
-
-    // RUMUS PENARIK DATA KAS
+    // 4. RUMUS KAS MUDA
     $totalKasMuda = \App\Models\KasMuda::sum('nominal') ?? 0;
-    $totalKasTua = \App\Models\KasTua::sum('nominal') ?? 0;
-
-    // RUMUS TOTAL SALDO KARANG TARUNA
-    $totalSaldoKarangTaruna = $tabunganBulanIniTotal + $totalKasMuda + $totalKasTua + $totalKompensasi - \App\Models\PengeluaranBendahara::sum('nominal');
-
-    // RUMUS TOTAL SALDO KARANG TARUNA
-    $totalSaldoKarangTaruna = $tabunganBulanIniTotal + $totalKasMuda + $totalKasTua + $totalKompensasi - \App\Models\PengeluaranBendahara::sum('nominal');
-
-    // RUMUS RINCIAN KAS MUDA
     $kasMudaBulanKemarin = \App\Models\KasMuda::whereRaw("DATE_FORMAT(tanggal, '%Y-%m') < ?", [$bulanIni])->sum('nominal');
     $kasMudaBulanIni = \App\Models\KasMuda::whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanIni])->sum('nominal');
 
-    // RUMUS RINCIAN KAS TUA
+    // 5. RUMUS KAS TUA
+    $totalKasTua = \App\Models\KasTua::sum('nominal') ?? 0;
     $kasTuaBulanKemarin = \App\Models\KasTua::whereRaw("DATE_FORMAT(tanggal, '%Y-%m') < ?", [$bulanIni])->sum('nominal');
     $kasTuaBulanIni = \App\Models\KasTua::whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanIni])->sum('nominal');
-    @endphp
+@endphp
 
     <!-- Grid Utama: Dibagi 2 Kolom Besar (Sisi Kiri untuk Tabungan & Kompensasi, Sisi Kanan untuk Kas Muda & Kas Tua) -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-2 mb-2">
@@ -83,7 +69,7 @@ $saldoKompensasiKemarin = DB::table('kompensasis')
                     <!-- Sisi Kiri Tabungan: Total Saldo Bulan Ini -->
                     <div>
                         <p class="text-xs text-slate-500 font-medium mb-1">Tabungan Bulan Ini</p>
-                        <h3 class="text-2xl font-black text-slate-800 tracking-tight">Rp {{ number_format($tabunganBulanIniTotal + $totalKasMuda + $totalKasTua - \App\Models\PengeluaranBendahara::sum('nominal'), 0, ',', '.') }}</h3>
+                        <h3 class="text-2xl font-black text-slate-800 tracking-tight">Rp {{ number_format($totalTabungan, 0, ',', '.') }}</h3>
                         <a href="{{ route('bendahara.tabungan') }}" class="text-xs font-bold text-emerald-600 hover:text-emerald-700 mt-2 inline-block">Rincian Tabungan &rarr;</a>
                     </div>
 
@@ -91,7 +77,7 @@ $saldoKompensasiKemarin = DB::table('kompensasis')
                     <div class="border-t md:border-t-0 md:border-l border-slate-100 pt-3 md:pt-0 md:pl-4 flex flex-col justify-center space-y-2">
                         <div class="flex justify-between items-center text-[11px] pb-1 border-b border-dashed border-slate-200">
                             <span class="text-slate-500">Saldo Bulan Kemarin:</span>
-                            <span class="font-bold text-slate-700">Rp {{ number_format($saldoTabunganBulanKemarin, 0, ',', '.') }}</span>
+                            <span class="font-bold text-slate-700">Rp {{ number_format($tabunganBulanKemarin, 0, ',', '.') }}</span>
                         </div>
                         <div class="flex justify-between items-center text-[11px] pb-1 border-b border-dashed border-slate-200">
                             <span class="text-slate-500">Setoran Candi:</span>
@@ -197,7 +183,7 @@ $saldoKompensasiKemarin = DB::table('kompensasis')
                         <!-- Sisi Kiri Kompensasi: Total Saldo Ini -->
                         <div>
                             <p class="text-xs text-slate-500 font-medium mb-1">Total Saldo Ini</p>
-                            <h3 class="text-2xl font-black text-slate-800 tracking-tight">Rp {{ number_format($totalKompensasi ?? 0, 0, ',', '.') }}</h3>
+                            <h3 class="text-2xl font-black text-slate-800 tracking-tight">Rp {{ number_format($totalKompensasi, 0, ',', '.') }}</h3>
                             <a href="{{ route('bendahara.kompensasi') }}" class="text-xs font-bold text-orange-600 hover:text-orange-700 mt-2 inline-block">Cek Riwayat &rarr;</a>
                         </div>
 
