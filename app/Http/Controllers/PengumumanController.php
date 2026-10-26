@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Http;
+
 use Illuminate\Http\Request;
 use App\Models\User;
 
@@ -20,7 +22,7 @@ class PengumumanController extends Controller
             'target_rt' => 'required|in:23,24,all',
         ]);
 
-        $user = auth()->user();
+        $user = \Illuminate\Support\Facades\Auth::user();
 
         // Validasi Hak Akses RT: Humas 23 hanya boleh kirim ke RT 23, Humas 24 ke RT 24
         if ($user->rt_akses !== 'all' && $user->rt_akses !== $request->target_rt) {

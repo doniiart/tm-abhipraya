@@ -196,23 +196,21 @@ class HumasController extends Controller
 
     public function manajemenIuran()
 {
-    // 1. Ambil ID pertemuan/kumpulan terakhir yang sudah selesai
-    $pertemuanTerakhir = \App\Models\MeetingAgenda::latest('tanggal')->first();
+        // ambil semua data pemuda
+        $daftarPemuda = Anggota::all()->map(function ($pemuda) {
 
-    // 2. Ambil semua data pemuda
-    $daftarPemuda = Anggota::all()->map(function($pemuda) use ($pertemuanTerakhir) {
-        
-        // 3. Cek apakah di pertemuan terakhir, pemuda ini setorannya 0 atau tidak hadir
-        $cekSetoran = Iuran::where('anggota_id', $pemuda->id)
-                            ->where('tanggal', $pertemuanTerakhir->tanggal)
-                           ->first();
-        
-        // Jika data setoran tidak ada ATAU total setorannya 0, tandai sebagai nunggak
-        $pemuda->punya_tunggakan = (!$cekSetoran || $cekSetoran->total_setoran == 0) ? true : false;
-        
-        return $pemuda;
-    });
+            // 2. Cek riwayat setoran TERAKHIR pemuda ini di bulan sebelumnya (yang sudah diarsipkan)
+            $cekSetoran = \App\Models\Iuran::where('anggota_id', $pemuda->id)
+                ->where('status_riwayat', 'arsip')
+                ->latest('tanggal')
+                ->first();
 
-    return view('humas.manajemen_iuran', compact('daftarPemuda'));
+            // 3. Jika bulan lalu tidak ada data ATAU total setorannya 0, tandai sebagai nunggak
+            $pemuda->punya_tunggakan = (!$cekSetoran || $cekSetoran->total_setoran == 0) ? true : false;
+
+            return $pemuda;
+        });
+
+        return view('humas.manajemen_iuran', compact('daftarPemuda'));
 }
 }

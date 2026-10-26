@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\FinancialTransaction;
 
 class FinanceController extends Controller
 {
@@ -32,7 +33,7 @@ class FinanceController extends Controller
             $validated['proof_file'] = $request->file('proof_file')->store('receipts', 'public');
         }
 
-        $validated['created_by'] = auth()->id();
+        $validated['created_by'] = \Illuminate\Support\Facades\Auth::id();
         FinancialTransaction::create($validated);
         
         return redirect()->back()->with('succes', 'Transaksi kas berhasil dicatat!');

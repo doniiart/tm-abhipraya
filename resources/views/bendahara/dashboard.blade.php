@@ -17,21 +17,20 @@
     // 3. RUMUS TABUNGAN (DARI HUMAS)
     $totalTabungan = \App\Models\Iuran::sum('tabungan') ?? 0; // Total keseluruhan tabungan
 
-    $tabunganBulanKemarin = \DB::table('iurans')
-        ->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanKemarin])
-        ->sum('tabungan');
+    // Saldo Bulan Kemarin (Semua tabungan yang sudah di arsipkan)
+    $tabunganBulanKemarin = \App\Models\Iuran::where('status_riwayat', 'arsip')->sum('tabungan');
         
-    $tabunganCandiBulanIni = \DB::table('iurans')
-        ->join('anggotas', 'iurans.anggota_id', '=', 'anggotas.id')
-        ->where('anggotas.rt', '23')
-        ->whereRaw("DATE_FORMAT(iurans.tanggal, '%Y-%m') = ?", [$bulanIni])
-        ->sum('iurans.tabungan');
+    // Setoran candi untuk iuran yang masih aktif bulan ini
+    $tabunganCandiBulanIni = \App\Models\Iuran::where('status_riwayat', 'aktif')
+    ->whereHas('anggota', function($q) {
+        $q->where('rt', '23');
+    })->sum('tabungan');
         
-    $tabunganGunungBulanIni = \DB::table('iurans')
-        ->join('anggotas', 'iurans.anggota_id', '=', 'anggotas.id')
-        ->where('anggotas.rt', '24')
-        ->whereRaw("DATE_FORMAT(iurans.tanggal, '%Y-%m') = ?", [$bulanIni])
-        ->sum('iurans.tabungan');
+    // Setoran gunung untuk iuran yang masih aktif bulan ini
+    $tabunganGunungBulanIni = \App\Models\Iuran::where('status_riwayat', 'aktif')
+    ->whereHas('anggota', function($q) {
+        $q->where('rt', '24');
+    })->sum('tabungan');
         
     $tabunganBulanIniTotal = $tabunganCandiBulanIni + $tabunganGunungBulanIni;
 
@@ -44,6 +43,10 @@
     $totalKasTua = \App\Models\KasTua::sum('nominal') ?? 0;
     $kasTuaBulanKemarin = \App\Models\KasTua::whereRaw("DATE_FORMAT(tanggal, '%Y-%m') < ?", [$bulanIni])->sum('nominal');
     $kasTuaBulanIni = \App\Models\KasTua::whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanIni])->sum('nominal');
+
+    //total pengeluaran dan total saldo semuanya
+    $totalPengeluaranBendahara = \App\Models\PengeluaranBendahara::sum('nominal') ?? 0;
+    $totalSaldoKarangTaruna = $totalTabungan + $totalKasMuda + $totalKasTua + $totalKompensasi - $totalPengeluaranBendahara;
 @endphp
 
     <!-- Grid Utama: Dibagi 2 Kolom Besar (Sisi Kiri untuk Tabungan & Kompensasi, Sisi Kanan untuk Kas Muda & Kas Tua) -->
@@ -68,8 +71,8 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Sisi Kiri Tabungan: Total Saldo Bulan Ini -->
                     <div>
-                        <p class="text-xs text-slate-500 font-medium mb-1">Tabungan Bulan Ini</p>
-                        <h3 class="text-2xl font-black text-slate-800 tracking-tight">Rp {{ number_format($totalTabungan, 0, ',', '.') }}</h3>
+                        <p class="text-xs text-slate-500 font-medium mb-1">Total Saldo Karang Taruna</p>
+                        <h3 class="text-2xl font-black text-slate-800 tracking-tight">Rp {{ number_format($totalSaldoKarangTaruna, 0, ',', '.') }}</h3>
                         <a href="{{ route('bendahara.tabungan') }}" class="text-xs font-bold text-emerald-600 hover:text-emerald-700 mt-2 inline-block">Rincian Tabungan &rarr;</a>
                     </div>
 
@@ -81,11 +84,11 @@
                         </div>
                         <div class="flex justify-between items-center text-[11px] pb-1 border-b border-dashed border-slate-200">
                             <span class="text-slate-500">Setoran Candi:</span>
-                            <span class="font-bold text-emerald-600">+ Rp {{ number_format($tabunganCandi, 0, ',', '.') }}</span>
+                            <span class="font-bold text-emerald-600">+ Rp {{ number_format($tabunganCandiBulanIni, 0, ',', '.') }}</span>
                         </div>
                         <div class="flex justify-between items-center text-[11px]">
                             <span class="text-slate-500">Setoran Gunung:</span>
-                            <span class="font-bold text-emerald-600">+ Rp {{ number_format($tabunganGunung, 0, ',', '.') }}</span>
+                            <span class="font-bold text-emerald-600">+ Rp {{ number_format($tabunganGunungBulanIni, 0, ',', '.') }}</span>
                         </div>
                     </div>
                 </div>

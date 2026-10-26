@@ -10,21 +10,20 @@ $tabunganBulanIniTotal = DB::table('iurans')
 ->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanIni])
 ->sum('tabungan');
 
-$tabunganBulanKemarin = DB::table('iurans')
-->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanKemarin])
-->sum('tabungan');
+// Saldo bulan kemarin (Semua tabungan yang sudah diarsipkan)
+$tabunganBulanKemarin = \App\Models\Iuran::where('status_riwayat', 'arsip')->sum('tabungan');
 
-$tabunganCandiBulanIni = DB::table('iurans')
-->join('anggotas', 'iurans.anggota_id', '=', 'anggotas.id')
-->where('anggotas.rt', '23')
-->whereRaw("DATE_FORMAT(iurans.tanggal, '%Y-%m') = ?", [$bulanIni])
-->sum('iurans.tabungan');
+// setoran candi yang masih aktif bulan ini
+$tabunganCandiBulanIni = \App\Models\Iuran::where('status_riwayat', 'aktif')
+    ->whereHas('anggota', function($q) {
+        $q->where('rt', '23');
+    })->sum('tabungan');
 
-$tabunganGunungBulanIni = DB::table('iurans')
-->join('anggotas', 'iurans.anggota_id', '=', 'anggotas.id')
-->where('anggotas.rt', '24')
-->whereRaw("DATE_FORMAT(iurans.tanggal, '%Y-%m') = ?", [$bulanIni])
-->sum('iurans.tabungan');
+// setoran gunung yang masih aktif bulan ini
+$tabunganGunungBulanIni = \App\Models\Iuran::where('status_riwayat', 'aktif')
+    ->whereHas('anggota', function($q) {
+        $q->where('rt', '24');
+    })->sum('tabungan');
 
 // 1. Ambil Saldo Kompensasi Bulan Kemarin (Semua saldo sebelum bulan ini)
 $saldoKompensasiKemarin = DB::table('kompensasis')

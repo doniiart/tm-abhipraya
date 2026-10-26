@@ -33,8 +33,8 @@ class ArisanController extends Controller
         // Bersih yang didapat tuan rumah malam ini
         $arisanMendapatkan = $sisaSetelahDansos - $kekuranganBulanKemarin; // Rp 190.000
 
-        // Menghitung defisit baru (misal target hak tuan rumah adalah Rp 290.000)
-        $targetHakTuanRumah = 290000; 
+        // Menghitung defisit baru (misal target hak tuan rumah adalah Rp 285.000)
+        $targetHakTuanRumah = 285000; 
         $masihKurangBulanIni = $targetHakTuanRumah - $arisanMendapatkan; // Rp 100.000
         $daftarAnggota = \App\Models\Anggota::pluck('nama');
 
@@ -113,7 +113,7 @@ class ArisanController extends Controller
         // 2. Cek riwayat lalu & hitung
         $riwayatBulanLalu = \App\Models\RiwayatArisan::where('status', 'selesai')->orderBy('tanggal', 'desc')->first();
         $kekuranganBulanKemarin = $riwayatBulanLalu ? $riwayatBulanLalu->masih_kurang : 0;
-        $targetHakTuanRumah = 290000;
+        $targetHakTuanRumah = 285000;
 
         if ($totalHumas == 0) {
             $potonganDansos = 0; $sisaSetelahDansos = 0; $arisanMendapatkan = 0; $masihKurangBulanIni = 0;

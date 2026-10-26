@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\MeetingAttendance;
 use Illuminate\Database\Eloquent\Model;
+
 
 class Meeting extends Model
 {
