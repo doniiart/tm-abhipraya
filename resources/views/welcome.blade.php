@@ -110,7 +110,7 @@
             <span class="font-medium text-white">Merapatkan ukhuwah, memperkasakan potensi.</span>
         </p>
 
-        <div class="reveal active delay-300 flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+        <div class="reveal active delay-300 flex flex-col sm:flex-row gap-4 w-full sm:w-auto mb-6">
             <a href="#bagian-galeri" class="w-full sm:w-auto inline-flex justify-center items-center gap-2 bg-yellow-400 text-gray-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-500 hover:-translate-y-1 hover:shadow-[0_10px_40px_rgba(250,204,21,0.5)] transition-all duration-300">
                 Lihat Agenda
                 <svg class="w-5 h-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">

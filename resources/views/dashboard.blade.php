@@ -513,8 +513,8 @@
 
 
             <!-- TABEL RT 23 -->
-            <div x-show="activeTab === 'rt23'" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden transition-opacity">
-                <table class="w-full text-left border-collapse">
+            <div x-show="activeTab == 'rt23'" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-x-auto transition-opacity">
+                <table class="w-full min-w-[650px] text-left border-collapse">
                     <thead class="bg-gray-50 border-b border-gray-100 text-xs uppercase tracking-widest text-slate-400 font-bold">
                         <tr>
                             <th class="py-3 px-4">NAMA PEMUDA</th>
@@ -589,8 +589,8 @@
             </div>
 
             <!-- TABEL RT 24 -->
-            <div x-show="activeTab === 'rt24'" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden transition-opacity" style="display: none;">
-                <table class="w-full text-left border-collapse">
+            <div x-show="activeTab == 'rt24'" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-x-auto transition-opacity" style="display: none;">
+                <table class="w-full min-w-[650px] text-left border-collapse">
                     <thead class="bg-gray-50 border-b border-gray-100 text-xs uppercase tracking-widest text-slate-400 font-bold">
                         <tr>
                             <th class="py-3 px-4">NAMA PEMUDA</th>
