@@ -517,7 +517,7 @@
                 <table class="w-full min-w-[650px] text-left border-collapse">
                     <thead class="bg-gray-50 border-b border-gray-100 text-xs uppercase tracking-widest text-slate-400 font-bold">
                         <tr>
-                            <th class="py-3 px-4">NAMA PEMUDA</th>
+                            <th class="py-3 px-4 sticky left-0 bg-gray-50 z-10 border-r border-gray-100">NAMA PEMUDA</th>
                             <th class="py-3 px-4 text-center">STATUS</th>
                             <th class="py-3 px-4 text-center">NOMINAL WAJIB</th>
                             <th class="py-3 px-4 text-center">KELIPATAN</th>
@@ -532,7 +532,7 @@
                     <tbody class="divide-y divide-gray-50">
                         @foreach($anggotaRT23 as $anggota)
                         <tr class="hover:bg-slate-50 transition-colors">
-                            <td class="py-3 px-4 font-bold {{ $anggota->status == 'Sekolah' ? 'text-sky-600' : 'text-slate-800' }}">
+                            <td class="py-3 px-4 font-bold sticky left-0 bg-white z-10 border-r border-gray-100 {{ $anggota->status == 'Sekolah' ? 'text-sky-600' : 'text-slate-800' }}">
                                 {{ $anggota->nama }}
                             </td>
                             <td class="py-3 px-4 text-center">
@@ -593,7 +593,7 @@
                 <table class="w-full min-w-[650px] text-left border-collapse">
                     <thead class="bg-gray-50 border-b border-gray-100 text-xs uppercase tracking-widest text-slate-400 font-bold">
                         <tr>
-                            <th class="py-3 px-4">NAMA PEMUDA</th>
+                            <th class="py-3 px-4 sticky left-0 bg-gray-50 z-10 border-r border-gray-100">NAMA PEMUDA</th>
                             <th class="py-3 px-4 text-center">STATUS</th>
                             <th class="py-3 px-4 text-center">NOMINAL WAJIB</th>
                             <th class="py-3 px-4 text-center">KELIPATAN</th>
@@ -608,7 +608,7 @@
                     <tbody class="divide-y divide-gray-50">
                         @foreach($anggotaRT24 as $anggota)
                         <tr class="hover:bg-slate-50 transition-colors">
-                            <td class="py-3 px-4 font-bold {{ $anggota->status == 'Sekolah' ? 'text-sky-600' : 'text-slate-800' }}">
+                            <td class="py-3 px-4 font-bold sticky left-0 bg-white z-10 border-r border-gray-100 {{ $anggota->status == 'Sekolah' ? 'text-sky-600' : 'text-slate-800' }}">
                                 {{ $anggota->nama }}
                             </td>
                             <td class="py-3 px-4 text-center">
