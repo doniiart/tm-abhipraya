@@ -75,7 +75,7 @@
                 <div class="relative p-8 md:p-10 flex flex-col md:flex-row items-center justify-between">
                     <div>
                         <p class="text-yellow-400 font-bold tracking-widest text-xs uppercase mb-1">
-                            Akses: {{ Auth::user()->roles->first()->name ?? 'Anggota Biasa' }}
+                            Akses: {{ Auth::user()->roles?->first()?->name ?? 'Anggota Biasa' }}
                         </p>
                         <h3 class="text-3xl md:text-4xl font-black text-white mb-2">
                             Halo {{ explode(' ', Auth::user()->name)[0] }}! 👋
@@ -309,29 +309,29 @@
 
 
                 @if(auth()->user()->hasRole('super-admin') || auth()->user()->hasRole('dansos') || auth()->user()->hasRole('anggota'))
-    <div class="bg-white p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 flex flex-col justify-between hover:shadow-md transition-shadow">
-        <div>
-            <div class="flex items-center gap-3 mb-4">
-                <div class="p-3 bg-slate-100 text-slate-900 rounded-xl">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                <div class="bg-white p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 flex flex-col justify-between hover:shadow-md transition-shadow">
+                    <div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="p-3 bg-slate-100 text-slate-900 rounded-xl">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            </div>
+                            <h3 class="font-bold text-gray-700">Manajemen Galeri</h3>
+                        </div>
+                        <p class="text-sm text-gray-500 mb-4">Unggah dan kelola foto dokumentasi kegiatan Karang Taruna.</p>
+                    </div>
+                    <a href="{{ route('galeri.index') }}" class="inline-flex items-center gap-2 text-sm font-bold text-slate-900 hover:text-slate-700">
+                        Buka Galeri 
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                    </a>
                 </div>
-                <h3 class="font-bold text-gray-700">Manajemen Galeri</h3>
-            </div>
-            <p class="text-sm text-gray-500 mb-4">Unggah dan kelola foto dokumentasi kegiatan Karang Taruna.</p>
-        </div>
-        <a href="{{ route('galeri.index') }}" class="inline-flex items-center gap-2 text-sm font-bold text-slate-900 hover:text-slate-700">
-            Buka Galeri 
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-        </a>
-    </div>
-    @endif
+                @endif
 
                 {{-- ========================================== --}}
                 {{-- UNTUK SEMUA (ANGGOTA & PENGURUS)           --}}
                 {{-- WIDGET JADWAL KUMPULAN                     --}}
                 {{-- ========================================== --}}
                 
-                <div class="md:col-span-2 lg:col-span-2 bg-white rounded-2xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 relative overflow-hidden mb-4">
+                <div class="md:col-span-2 lg:col-span-2 bg-white rounded-2xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 relative overflow-hidden">
                     <div class="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-gray-50 to-transparent pointer-events-none"></div>
                     
                     <div class="flex items-center gap-3 mb-6">
@@ -745,19 +745,97 @@
         </div>
     </div>
 
-<script>
-    document.getElementById('tombol-notif')?.addEventListener('click', function() {
-        if (!("Notification" in window)) {
-            alert("Browser HP Anda tidak mendukung Web Push Notification.");
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+    // Fungsi helper untuk mengubah VAPID key string ke format biner (Uint8Array) yang valid di browser
+    function urlBase64ToUint8Array(base64String) {
+        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+        const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+        const rawData = window.atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; ++i) {
+            outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
+    }
+
+    document.getElementById('tombol-notif')?.addEventListener('click', async function() {
+        if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+            alert('Browser HP Anda tidak mendukung Web Push Notification.');
             return;
         }
-        Notification.requestPermission().then(function(izin) {
-            if (izin === 'granted') {
-                alert('Mantap! Anda akan menerima pengingat kumpulan di HP ini.');
+
+        try {
+            // 1. Daftarkan Service Worker dan tunggu sampai benar-benar siap
+            const registration = await navigator.serviceWorker.register('/sw.js');
+            await navigator.serviceWorker.ready;
+
+            // 2. Minta izin ke browser
+            const permissionResult = await Notification.requestPermission();
+            if (permissionResult !== 'granted') {
+                alert('Izin notifikasi ditolak.');
+                return;
+            }
+
+            // 3. Ambil VAPID Public Key dari konfigurasi Laravel (.env)
+            const vapidPublicKey = '{{ config("webpush.vapid.public_key") }}';
+            if (!vapidPublicKey) {
+                alert('VAPID Public Key belum dikonfigurasi di file .env Laravel!');
+                return;
+            }
+            
+            // 4. Konversi VAPID key agar formatnya terbaca oleh PushManager
+            const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
+
+            // 5. Lakukan subscribe perangkat
+            const subscription = await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: convertedVapidKey
+            });
+
+            // 6. Kirim data subscription ke route Laravel
+            const response = await fetch('/push-subscribe', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify(subscription)
+            });
+
+            if (response.ok) {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end', // Muncul dari pojok kanan atas
+                    icon: 'success',
+                    title: 'Notifikasi Aktif!',
+                    text: 'Perangkat Anda siap menerima pengingat otomatis.',
+                    showConfirmButton: false,
+                    timer: 3500, // Akan hilang otomatis dalam 3,5 detik
+                    timerProgressBar: true,
+                    background: '#ffffff',
+                    color: '#0f172a', // text-slate-900
+                    customClass: {
+                        popup: 'rounded-2xl shadow-lg border border-slate-100' // Menyatu dengan tema web
+                    },
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                });
             } else {
-                alert('Izin ditolak. Anda tetap bisa melihat jadwal di halaman Beranda.');
+                alert('Gagal menyimpan langganan ke server database.');
+            }
+        } catch (error) {
+            console.error('Error saat mengaktifkan notifikasi:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Terjadi kesalahan sistem: ' + error.message,
+                confirmButtonColor: '#0f172a'
+            });
         }
     });
-})
-</script>
+    </script>
 </x-app-layout>

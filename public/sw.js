@@ -27,3 +27,28 @@ self.addEventListener('notificationclick', function (e) {
         clients.openWindow(e.notification.data.url) // Arahkan ke halaman detail kumpulan
     );
 });
+
+
+// untuk memunculkan notifikasi meskipun web tertutup
+self.addEventListener('push', function (event) {
+    if (!(self.Notification && self.Notification.permission === 'granted')) {
+        return;
+    }
+
+    const data = event.data ? event.data.json() : {};
+    const title = data.title || 'Informasi Karang Taruna Abhipraya';
+    const options = {
+        body: data.body || 'Ada pengumuman penting untuk warga.',
+        icon: '/favicon.ico', // Sesuaikan path logo jika ada
+        badge: '/favicon.ico'
+    };
+
+    event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', function(event) {
+    event.notification.close();
+    event.waitUntil(
+        clients.openWindow('/')
+    );
+});

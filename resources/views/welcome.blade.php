@@ -174,21 +174,21 @@
 <!-- Statistik Organisasi Dinamis (REAL DATA DARI DATABASE) -->
 
 <!-- Baris 2: Laporan Keuangan & Administrasi -->
-<!-- Baris 1: Statistik Umum (Anggota & Sosial) -->
 <div id="bagian-laporan" class="grid grid-cols-2 gap-4 mt-8">
-    <!-- Kotak: Anggota Aktif -->
-    <a href="{{ route('anggota.index') }}" class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center hover:shadow-md transition-shadow">
-        <h3 class="text-3xl font-extrabold text-red-600 mb-1">{{ $settings->stat_anggota ?? '60+' }}</h3>
-        <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Anggota Aktif</p>
+    <!-- Kotak: Anggota Aktif (Gradasi Merah Halus) -->
+    <a href="{{ route('anggota.index') }}" class="group bg-gradient-to-br from-red-50 to-white rounded-2xl shadow-sm border border-red-100 p-6 flex flex-col items-center justify-center hover:shadow-md hover:border-red-200 transition-all duration-300 cursor-pointer">
+        <h3 class="text-3xl font-extrabold text-red-600 mb-1 group-hover:scale-110 transition-transform duration-300">
+            {{ $settings->stat_anggota ?? '60+' }}
+        </h3>
+        <p class="text-xs font-bold text-red-400 uppercase tracking-wider mt-2">Anggota Aktif</p>
     </a>
 
-    <!-- Kotak: Kegiatan Sosial (Warna Merah) -->
-    <!-- Kartu Kegiatan Sosial (Sekarang Bisa Diklik) -->
-    <a href="{{ route('kegiatan.publik') }}" class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col items-center justify-center hover:shadow-md hover:border-red-200 transition-all duration-300 group cursor-pointer">
-        <h3 class="text-3xl font-black text-red-600 group-hover:scale-110 transition-transform duration-300">
+    <!-- Kotak: Kegiatan Sosial (Gradasi Kuning Emas Halus) -->
+    <a href="{{ route('kegiatan.publik') }}" class="group bg-gradient-to-br from-amber-50 to-white rounded-2xl shadow-sm border border-amber-100 p-6 flex flex-col items-center justify-center hover:shadow-md hover:border-amber-200 transition-all duration-300 cursor-pointer">
+        <h3 class="text-3xl font-black text-amber-500 group-hover:scale-110 transition-transform duration-300">
             {{ $total_kegiatan ?? '0' }}+
         </h3>
-        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">Kegiatan Sosial</p>
+        <p class="text-[10px] font-bold text-amber-500 uppercase tracking-widest mt-2">Kegiatan Sosial</p>
     </a>
 </div>
 
@@ -197,96 +197,80 @@
 <!-- Grid Menu Utama (Responsif & Interaktif Halus) -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-6">
 
-    <!-- Kartu 1: Humas (Aktif / Bisa Diklik) -->
-    <a href="{{ route('laporan.humas') }}" onclick="validasiAnggota(event, this.href)" class="group bg-white rounded-xl p-5 sm:p-6 border border-gray-100 shadow-sm hover:border-slate-300 hover:shadow-md active:scale-[0.98] transition-all duration-200 block">
-        <div class="flex items-center justify-between mb-4">
-            <div class="w-10 h-10 rounded-lg bg-slate-50 group-hover:bg-slate-900 group-hover:text-white flex items-center justify-center text-gray-700 font-semibold text-sm transition-colors duration-200">
-                📋
+    <!-- Kartu 1: Humas (Warna Merah Logo) -->
+    <a href="{{ route('laporan.humas') }}" onclick="validasiAnggota(event, this.href)" class="group block bg-gradient-to-br from-red-50 to-white p-6 rounded-2xl shadow-sm border border-red-100 hover:border-red-200 hover:shadow-md transition-all relative overflow-hidden">
+        <div class="flex justify-between items-start mb-4">
+            <div class="w-10 h-10 rounded-xl bg-red-100 group-hover:bg-red-600 flex items-center justify-center text-red-600 group-hover:text-white font-bold text-sm transition-colors duration-300">
+                H
             </div>
-            <span class="text-xs font-semibold text-slate-400 group-hover:text-slate-900 transition-colors flex items-center gap-1">
-                <span>Buka</span>
-                <span class="group-hover:translate-x-0.5 transition-transform">→</span>
+            <span class="text-xs font-bold text-red-300 group-hover:text-red-600 transition-colors flex items-center gap-1">
+                Buka <span class="group-hover:translate-x-0.5 transition-transform">&rarr;</span>
             </span>
         </div>
-        <h3 class="text-xl font-bold text-gray-900 tracking-tight">Humas</h3>
-        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mt-0.5">Laporan Humas</p>
-        <p class="text-[11px] text-gray-400 mt-3 pt-3 border-t border-gray-50">Arisan, Tabungan, Dansos</p>
+        <h3 class="text-xl font-bold text-slate-900 tracking-tight">Humas</h3>
+        <p class="text-[10px] font-bold text-red-500 uppercase tracking-wider mt-0.5">Laporan Humas</p>
+        <p class="text-xs text-slate-500 mt-3 pt-3 border-t border-red-100/50">Arisan, Tabungan, Dansos</p>
     </a>
 
     <!-- Kartu 2: Arisan -->
-    <a href="{{ route('laporan.arisan.publik') }}" onclick="validasiAnggota(event, this.href)" class="block bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md hover:border-emerald-200 transition-all cursor-pointer relative group">
-
-        <!-- Tambahkan tulisan "Buka ->" di pojok kanan atas agar seragam dengan kartu lain -->
-        <span class="absolute top-6 right-6 text-xs font-bold text-slate-400 group-hover:text-emerald-500 transition-colors">
-            Buka &rarr;
-        </span>
-
-        <div class="w-10 h-10 bg-emerald-50 rounded-full flex items-center justify-center mb-4">
-            <!-- Ikon Arisan Anda (Biarkan kode SVG/Ikon yang sudah ada) -->
-            💰
+    <a href="{{ route('laporan.arisan.publik') }}" onclick="validasiAnggota(event, this.href)" class="group block bg-gradient-to-br from-amber-50 to-white p-6 rounded-2xl shadow-sm border border-amber-100 hover:border-amber-200 hover:shadow-md transition-all relative overflow-hidden">
+        <div class="flex justify-between items-start mb-4">
+            <div class="w-10 h-10 rounded-xl bg-amber-100 group-hover:bg-amber-500 flex items-center justify-center text-amber-600 group-hover:text-white font-bold text-sm transition-colors duration-300">
+                A
+            </div>
+            <span class="text-xs font-bold text-amber-300 group-hover:text-amber-600 transition-colors flex items-center gap-1">
+                Buka <span class="group-hover:translate-x-0.5 transition-transform">&rarr;</span>
+            </span>
         </div>
-
-        <h3 class="font-black text-slate-800 text-lg mb-1">Arisan</h3>
-        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Laporan Arisan</p>
-        <p class="text-xs text-slate-400">Rekap iuran arisan rutin</p>
+        <h3 class="text-xl font-bold text-slate-900 tracking-tight">Arisan</h3>
+        <p class="text-[10px] font-bold text-amber-600 uppercase tracking-wider mt-0.5">Laporan Arisan</p>
+        <p class="text-xs text-slate-500 mt-3 pt-3 border-t border-amber-100/50">Rekap iuran arisan rutin</p>
     </a>
 
     <!-- Kartu 3: Dansos -->
-    <a href="{{ url('/laporan/dansos') }}" onclick="validasiAnggota(event, this.href)" class="block bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md hover:border-amber-200 transition-all relative group cursor-pointer">
-
-        <!-- Tulisan Buka -> di pojok kanan atas -->
-        <div class="absolute top-6 right-6 text-xs text-slate-400 group-hover:text-amber-600 transition-colors flex items-center gap-1">
-            Buka <span aria-hidden="true">&rarr;</span>
+    <a href="{{ url('/laporan/dansos') }}" onclick="validasiAnggota(event, this.href)" class="group block bg-gradient-to-br from-slate-100 to-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all relative overflow-hidden">
+        <div class="flex justify-between items-start mb-4">
+            <div class="w-10 h-10 rounded-xl bg-slate-200 group-hover:bg-slate-800 flex items-center justify-center text-slate-700 group-hover:text-white font-bold text-sm transition-colors duration-300">
+                D
+            </div>
+            <span class="text-xs font-bold text-slate-400 group-hover:text-slate-700 transition-colors flex items-center gap-1">
+                Buka <span class="group-hover:translate-x-0.5 transition-transform">&rarr;</span>
+            </span>
         </div>
-
-        <!-- Ikon -->
-        <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-500 mb-4 border border-amber-100">
-            🤝
-        </div>
-
-        <!-- Judul & Deskripsi -->
-        <h3 class="font-bold text-slate-800 text-lg mb-1">Dansos</h3>
-        <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-4">Laporan Dansos</p>
-        <p class="text-xs text-slate-400">Dana sosial & kemasyarakatan</p>
+        <h3 class="text-xl font-bold text-slate-900 tracking-tight">Dansos</h3>
+        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">Laporan Dansos</p>
+        <p class="text-xs text-slate-500 mt-3 pt-3 border-t border-slate-100">Dana sosial & kemasyarakatan</p>
     </a>
 
     <!-- Kartu 4: Bendahara -->
-    <div class="relative bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow group">
+    <a href="{{ route('public.bendahara') }}" onclick="validasiAnggota(event, this.href)" class="group block bg-gradient-to-br from-orange-50 to-white p-6 rounded-2xl shadow-sm border border-orange-100 hover:border-orange-200 hover:shadow-md transition-all relative overflow-hidden">
         <div class="flex justify-between items-start mb-4">
-            <div class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-lg">
-                🏦
+            <div class="w-10 h-10 rounded-xl bg-orange-100 group-hover:bg-orange-500 flex items-center justify-center text-orange-600 group-hover:text-white font-bold text-sm transition-colors duration-300">
+                B
             </div>
-            <!-- Tombol Buka -->
-            <div class="absolute top-6 right-6 text-xs text-slate-400 group-hover:text-amber-600 transition-colors flex items-center gap-1">
-                Buka <span aria-hidden="true">&rarr;</span>
-            </div>
+            <span class="text-xs font-bold text-orange-300 group-hover:text-orange-600 transition-colors flex items-center gap-1">
+                Buka <span class="group-hover:translate-x-0.5 transition-transform">&rarr;</span>
+            </span>
         </div>
-        <h3 class="text-xl font-bold text-slate-900">Bendahara</h3>
-        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 mb-3">Laporan Bendahara</p>
-        <p class="text-xs text-slate-400">Kas Muda, Kas Tua, Tabungan, Kompensasi</p>
-
-        <!-- Link area pemicu klik seluruh kartu (Opsional) -->
-        <a href="{{ route('public.bendahara') }}" onclick="validasiAnggota(event, this.href)" class="absolute inset-0 z-10" aria-label="Buka Laporan Bendahara"></a>
-    </div>
+        <h3 class="text-xl font-bold text-slate-900 tracking-tight">Bendahara</h3>
+        <p class="text-[10px] font-bold text-orange-500 uppercase tracking-wider mt-0.5">Laporan Bendahara</p>
+        <p class="text-xs text-slate-500 mt-3 pt-3 border-t border-orange-100/50">Kas Muda, Kas Tua, Tabungan, Kompensasi</p>
+    </a>
 
     <!-- Kartu 5: Persewaan -->
-    <div class="relative bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow group">
+    <a href="{{ route('laporan.persewaan') }}" onclick="validasiAnggota(event, this.href)" class="group block bg-gradient-to-br from-gray-50 to-white p-6 rounded-2xl shadow-sm border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all relative overflow-hidden">
         <div class="flex justify-between items-start mb-4">
-            <div class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-lg">
-                ⛺
+            <div class="w-10 h-10 rounded-xl bg-gray-200 group-hover:bg-gray-600 flex items-center justify-center text-gray-700 group-hover:text-white font-bold text-sm transition-colors duration-300">
+                P
             </div>
-            <!-- Tombol Buka -->
-            <div class="absolute top-6 right-6 text-xs text-slate-400 group-hover:text-amber-600 transition-colors flex items-center gap-1">
-                Buka <span aria-hidden="true">&rarr;</span>
-            </div>
+            <span class="text-xs font-bold text-gray-400 group-hover:text-gray-700 transition-colors flex items-center gap-1">
+                Buka <span class="group-hover:translate-x-0.5 transition-transform">&rarr;</span>
+            </span>
         </div>
-        <h3 class="text-xl font-bold text-slate-900">Persewaan</h3>
-        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 mb-3">Laporan Persewaan</p>
-        <p class="text-xs text-slate-500 border-t border-slate-50 pt-3">Daftar Nama Aset & Persewaan</p>
-
-        <!-- Link area pemicu klik seluruh kartu -->
-        <a href="{{ route('laporan.persewaan') }}" onclick="validasiAnggota(event, this.href)" class="absolute inset-0 z-10" aria-label="Buka Laporan Persewaan"></a>
-    </div>
+        <h3 class="text-xl font-bold text-slate-900 tracking-tight">Persewaan</h3>
+        <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mt-0.5">Laporan Persewaan</p>
+        <p class="text-xs text-slate-500 mt-3 pt-3 border-t border-gray-100">Daftar Nama Aset & Persewaan</p>
+    </a>
 
 </div>
 

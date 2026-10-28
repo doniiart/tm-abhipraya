@@ -8,6 +8,7 @@ use App\Http\Controllers\ProposalController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\WebsiteSettingController;
 use App\Models\SettingWeb;
+use App\Models\User;
 use App\Models\Galeri;
 use App\Http\Controllers\HumasController;
 use App\Http\Controllers\PengumumanController;
@@ -15,6 +16,8 @@ use App\Http\Controllers\DansosController;
 use App\Http\Controllers\AsetController;
 use App\Http\Controllers\SewaController;
 use App\Http\Controllers\ArisanController;
+use App\Http\Controllers\PushNotificationController;
+use App\Notifications\TestPushNotification;
 
 Route::get('/', function () {
     $settings = SettingWeb::first();
@@ -152,6 +155,7 @@ Route::get('/laporan/persewaan', [App\Http\Controllers\AsetController::class, 'l
 Route::get('/kegiatan-sosial', [App\Http\Controllers\GaleriController::class, 'halamanPublik'])->name('kegiatan.publik');
 Route::get('/bendahara/pengeluaran', [\App\Http\Controllers\PengeluaranBendaharaController::class, 'index'])->name('bendahara.pengeluaran.index');
 Route::get('/laporan/arisan', [\App\Http\Controllers\ArisanController::class, 'laporanPublik'])->name('laporan.arisan.publik');
+Route::post('/push-subscribe', [PushNotificationController::class, 'store']);
 
 
 Route::middleware(['auth'])->group(function () {
@@ -166,6 +170,18 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dansos/talangan', [DansosController::class, 'talanganIndex'])->name('dansos.talangan');
     Route::post('/dansos/talangan', [DansosController::class, 'talanganStore'])->name('dansos.talangan.store');
     Route::delete('/dansos/talangan/{id}', [DansosController::class, 'talanganDestroy'])->name('dansos.talangan.destroy');
+});
+
+Route::get('/kirim-test-notif', function () {
+    // Mengambil user yang sedang login atau user pertama di database
+    $user = Auth::user() ?? User::first();
+
+    if ($user) {
+        $user->notify(new TestPushNotification());
+        return 'Notifikasi uji coba berhasil dipicu ke pengguna: ' . $user->name;
+    }
+
+    return 'Tidak ada user yang ditemukan!';
 });
 
 require __DIR__.'/auth.php';
