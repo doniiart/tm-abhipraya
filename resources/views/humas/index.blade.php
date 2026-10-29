@@ -56,6 +56,20 @@
                                     <!-- 1. Kolom Nama -->
                                     <td class="py-4 px-6 font-extrabold {{ $anggota->status == 'Sekolah' ? 'text-blue-600' : 'text-slate-900' }}">
                                         {{ $anggota->nama }}
+                                        
+                                        @php
+                                            // Cek tunggakan bulan lalu dengan lebih akurat
+                                            $bulanLalu = \Carbon\Carbon::now()->subMonth()->format('Y-m');
+                                            $punyaTunggakan = !\App\Models\Iuran::where('anggota_id', $anggota->id)
+                                                ->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanLalu])
+                                                ->exists();
+                                        @endphp
+
+                                        @if($punyaTunggakan)
+                                            <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                                                Tunggakan
+                                            </span>
+                                        @endif
                                     </td>
 
                                     <!-- 2. Kolom Status -->
@@ -72,18 +86,6 @@
 
                                     <!-- 4. KOLOM KELIPATAN BAYAR -->
                                     <td class="py-3 px-4 text-center">
-                                        @php
-                                            // 1. Cari tanggal kumpulan yang paling terakhir tersimpan di sistem
-                                            $tanggalTerakhir = \App\Models\Iuran::max('tanggal');
-                                            
-                                            // 2. Cek apakah anggota ini menyetor iuran di tanggal terakhir tersebut
-                                            $cekIuran = \App\Models\Iuran::where('anggota_id', $anggota->id)
-                                                                        ->where('tanggal', $tanggalTerakhir)
-                                                                        ->first();
-                                            
-                                            // 3. Tentukan dia nunggak atau tidak (Tidak ada data ATAU total setorannya Rp 0)
-                                            $nunggak = $tanggalTerakhir && (!$cekIuran || ($cekIuran->arisan + $cekIuran->tabungan + $cekIuran->dansos) == 0);
-                                        @endphp
 
                                         @if($nunggak)
                                             <!-- Jika Nunggak: Otomatis pilih 2x dan beri warna merah sebagai pengingat -->
@@ -132,6 +134,20 @@
                                 <!-- 1. Kolom Nama -->
                                 <td class="py-4 px-6 font-extrabold {{ $anggota->status == 'Sekolah' ? 'text-blue-600' : 'text-slate-900' }}">
                                     {{ $anggota->nama }}
+                                    
+                                    @php
+                                        // Cek tunggakan bulan lalu dengan lebih akurat
+                                        $bulanLalu = \Carbon\Carbon::now()->subMonth()->format('Y-m');
+                                        $punyaTunggakan = !\App\Models\Iuran::where('anggota_id', $anggota->id)
+                                            ->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanLalu])
+                                            ->exists();
+                                    @endphp
+
+                                    @if($punyaTunggakan)
+                                        <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                                            Tunggakan
+                                        </span>
+                                    @endif
                                 </td>
 
                                 <!-- 2. Kolom Status -->

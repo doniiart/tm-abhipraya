@@ -544,40 +544,13 @@
                                 Rp {{ $anggota->status == 'Sekolah' ? '8.000' : '10.000' }}
                             </td>
                             <td class="py-3 px-4 text-center">
-                                        @php
-                                            // 1. Cari tanggal kumpulan yang paling terakhir tersimpan di sistem
-                                            $tanggalTerakhir = \App\Models\Iuran::whereHas('anggota', function($q) use ($anggota) {
-                                                $q->where('rt', $anggota->rt);
-                                            })->max('tanggal');
-                                            
-                                            // 2. Cek apakah anggota ini menyetor iuran di tanggal terakhir tersebut
-                                            $cekIuran = \App\Models\Iuran::where('anggota_id', $anggota->id)
-                                                                        ->where('tanggal', $tanggalTerakhir)
-                                                                        ->first();
-                                            
-                                            // 3. Tentukan dia Double atau tidak (Tidak ada data ATAU total setorannya Rp 0)
-                                            $Double = $tanggalTerakhir && (!$cekIuran || ($cekIuran->arisan + $cekIuran->tabungan + $cekIuran->dansos) == 0);
-                                        @endphp
-
-                                        @if($Double)
-                                            <!-- Jika Double: Otomatis pilih 2x dan beri warna merah sebagai pengingat -->
-                                            <select name="kelipatan[{{ $anggota->id }}]" class="text-xs font-bold rounded-lg border-red-300 bg-red-50 text-red-700 py-1 px-2 ...">
-                                                <option value="1">1x</option>
-                                                <option value="2" selected>2x</option>
-                                                <option value="3">3x</option>
-                                                <option value="4">4x</option>
-                                                <option value="5">5x</option>
-                                            </select>
-                                        @else
-                                            <!-- Jika Normal: Otomatis pilih 1x -->
-                                            <select name="kelipatan[{{ $anggota->id }}]" class="text-xs font-bold rounded-lg border-slate-200 py-1 px-2 focus:ring-red-500 focus:border-red-500">
-                                                <option value="1" selected>1x</option>
-                                                <option value="2">2x</option>
-                                                <option value="3">3x</option>
-                                                <option value="4">4x</option>
-                                                <option value="5">5x</option>
-                                            </select>
-                                        @endif
+                                        <select name="kelipatan[{{ $anggota->id }}]" class="text-xs font-bold rounded-lg border-slate-200 py-1 px-2 focus:ring-red-500 focus:border-red-500 mr-2 cursor-pointer">
+                                            <option value="1" selected>1x</option>
+                                            <option value="2">2x</option>
+                                            <option value="3">3x</option>
+                                            <option value="4">4x</option>
+                                            <option value="5">5x</option>
+                                        </select>
                                     </td>
                             <td class="py-3 px-4 text-center">
                                 <input type="checkbox" name="anggota_ids[]" value="{{ $anggota->id }}" class="rt23-checkbox rounded border-slate-300 text-red-600 focus:ring-red-500 w-4 h-4 cursor-pointer">
@@ -620,38 +593,13 @@
                                 Rp {{ $anggota->status == 'Sekolah' ? '8.000' : '10.000' }}
                             </td>
                             <td class="py-3 px-4 text-center">
-                                @php
-                                    // 1. Cari tanggal kumpulan yang paling terakhir tersimpan di sistem
-                                    $tanggalTerakhir = \App\Models\Iuran::max('tanggal');
-                                    
-                                    // 2. Cek apakah anggota ini menyetor iuran di tanggal terakhir tersebut
-                                    $cekIuran = \App\Models\Iuran::where('anggota_id', $anggota->id)
-                                                                ->where('tanggal', $tanggalTerakhir)
-                                                                ->first();
-                                    
-                                    // 3. Tentukan dia Double atau tidak (Tidak ada data ATAU total setorannya Rp 0)
-                                    $Double = $tanggalTerakhir && (!$cekIuran || ($cekIuran->arisan + $cekIuran->tabungan + $cekIuran->dansos) == 0);
-                                @endphp
-
-                                @if($Double)
-                                    <!-- Jika Double: Otomatis pilih 2x dan beri warna merah -->
-                                    <select name="kelipatan[{{ $anggota->id }}]" class="text-xs font-bold rounded-lg border-red-300 bg-red-50 text-red-700 py-1 px-2 ...">
-                                        <option value="1">1x</option>
-                                        <option value="2" selected>2x</option>
-                                        <option value="3">3x</option>
-                                        <option value="4">4x</option>
-                                        <option value="5">5x</option>
-                                    </select>
-                                @else
-                                    <!-- Jika Normal: Otomatis pilih 1x -->
-                                    <select name="kelipatan[{{ $anggota->id }}]" class="text-xs font-bold rounded-lg border-slate-200 py-1 px-2 ...">
-                                        <option value="1" selected>1x</option>
-                                        <option value="2">2x</option>
-                                        <option value="3">3x</option>
-                                        <option value="4">4x</option>
-                                        <option value="5">5x</option>
-                                    </select>
-                                @endif
+                                <select name="kelipatan[{{ $anggota->id }}]" class="text-xs font-bold rounded-lg border-slate-200 py-1 px-2 focus:ring-red-500 focus:border-red-500 mr-2 cursor-pointer">
+                                    <option value="1" selected>1x</option>
+                                    <option value="2">2x</option>
+                                    <option value="3">3x</option>
+                                    <option value="4">4x</option>
+                                    <option value="5">5x</option>
+                                </select>
                             </td>
                             <td class="py-3 px-4 text-center">
                                 <input type="checkbox" name="anggota_ids[]" value="{{ $anggota->id }}" class="rt24-checkbox rounded border-slate-300 text-red-600 focus:ring-red-500 w-4 h-4 cursor-pointer">

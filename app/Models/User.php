@@ -43,11 +43,11 @@ class User extends Authenticatable
             $roles = [$roles];
         }
 
-        return $this->roles()->whereIn('name', $roles)->exists();
+        return $this->roles()->whereIn('slug', $roles)->exists();
     }
 
     public function hasRole($role)
     {
-        return $this->roles()->where('name', $role)->exists();
+        return $this->roles()->where('slug', $role)->exists();
     }
 }
