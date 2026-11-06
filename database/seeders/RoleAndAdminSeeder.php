@@ -25,6 +25,7 @@ class RoleAndAdminSeeder extends Seeder
         ['name' => 'Petugas Persewaan','slug' => 'persewaan'],
         ['name' => 'Petugas Arisan', 'slug' => 'arisan'],
         ['name' => 'Anggota', 'slug' => 'anggota'],
+        ['name' => 'Petugas Sekretaris', 'slug' => 'sekretaris'],
         ];
 
         foreach ($roles as $role) {

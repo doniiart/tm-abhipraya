@@ -20,6 +20,7 @@ class DemoUserSeeder extends Seeder
             ['name' => 'Mas Persewaan', 'email' => 'sewa@demo.com', 'role' => 'persewaan'],
             ['name' => 'Anggota Biasa', 'email' => 'anggota@demo.com', 'role' => 'anggota'],
             ['name' => 'Mbak Arisan', 'email' => 'arisan@demo.com', 'role' => 'arisan'],
+            ['name' => 'Mbak Sekretaris', 'email' => 'sekretaris@demo.com', 'role' => 'sekretaris'],
         ];
 
         // 2. Proses pembuatan akun satu per satu
@@ -36,7 +37,7 @@ class DemoUserSeeder extends Seeder
             // 3. Cari jabatan/role di database, lalu tempelkan ke akun tersebut
             $role = Role::where('slug', $akun['role'])->first();
             if ($role) {
-                $user->roles()->attach($role->id);
+                $user->roles()->sync($role->id);
             }
         }
     }

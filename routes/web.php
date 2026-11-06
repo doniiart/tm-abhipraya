@@ -18,6 +18,7 @@ use App\Http\Controllers\SewaController;
 use App\Http\Controllers\ArisanController;
 use App\Http\Controllers\PushNotificationController;
 use App\Notifications\TestPushNotification;
+use App\Http\Controllers\SekretarisController;
 
 Route::get('/', function () {
     $settings = SettingWeb::first();
@@ -156,6 +157,13 @@ Route::get('/kegiatan-sosial', [App\Http\Controllers\GaleriController::class, 'h
 Route::get('/bendahara/pengeluaran', [\App\Http\Controllers\PengeluaranBendaharaController::class, 'index'])->name('bendahara.pengeluaran.index');
 Route::get('/laporan/arisan', [\App\Http\Controllers\ArisanController::class, 'laporanPublik'])->name('laporan.arisan.publik');
 Route::post('/push-subscribe', [PushNotificationController::class, 'store']);
+Route::get('/laporan/sekretaris/publik', [\App\Http\Controllers\SekretarisController::class, 'laporanPublik'])->name('laporan.sekretaris.publik');
+Route::get('/laporan/sekretaris/kesimpulan-keseluruhan', [\App\Http\Controllers\SekretarisController::class, 'kesimpulanKeseluruhan']);
+
+Route::middleware(['auth', 'role:sekretaris'])->group(function () {
+Route::get('/laporan/sekretaris', [SekretarisController::class, 'index'])->name('laporan.sekretaris');
+Route::post('/laporan/sekretaris/simpan-catatan', [\App\Http\Controllers\SekretarisController::class, 'simpanCatatan']);
+});
 
 
 Route::middleware(['auth'])->group(function () {
