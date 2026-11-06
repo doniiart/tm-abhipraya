@@ -196,7 +196,7 @@
     </div>
 
     <!-- Baris 2: Grid Menu Utama Laporan (Responsif 1, 2, 3 Kolom) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
         
         <!-- Kartu 1: Humas -->
         <a href="{{ route('laporan.humas') }}" onclick="validasiAnggota(event, this.href)" class="group block bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
@@ -273,6 +273,20 @@
             <p class="text-xs text-slate-500 mt-3 pt-3 border-t border-slate-100">Daftar Nama Aset & Persewaan</p>
         </a>
 
+        <!-- Kartu 6: Sekretaris -->
+        <a href="{{ url('/laporan/sekretaris') }}" onclick="validasiAnggota(event, this.href)" class="group block bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+            <div class="flex justify-between items-start mb-5">
+                <div class="w-11 h-11 rounded-xl bg-slate-100 group-hover:bg-purple-600 text-slate-700 group-hover:text-white font-bold text-base flex items-center justify-center transition-colors duration-300">
+                    S
+                </div>
+                <span class="text-xs font-semibold text-slate-400 group-hover:text-purple-600 transition-colors flex items-center gap-1">
+                    Buka <span class="group-hover:translate-x-1 transition-transform">&rarr;</span>
+                </span>
+            </div>
+            <p class="text-[11px] font-bold text-purple-600 uppercase tracking-widest mb-1">Laporan Sekretaris</p>
+            <h3 class="text-lg font-bold text-slate-900 group-hover:text-purple-600 transition-colors">Sekretaris</h3>
+            <p class="text-xs text-slate-500 mt-3 pt-3 border-t border-slate-100">Kesimpulan dan notulensi pertemuan</p>
+        </a>
     </div>
 
 <!-- Tab Filter Aktivitas -->
