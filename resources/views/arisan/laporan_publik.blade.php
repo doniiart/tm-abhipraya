@@ -16,18 +16,18 @@
                     <span class="text-sm font-bold text-slate-600">Total Uang Masuk</span>
                     <span class="font-black text-slate-700">Rp {{ number_format($totalHumas, 0, ',', '.') }}</span>
                 </div>
-                <div class="flex justify-between items-center p-3 bg-red-50 rounded-xl border border-red-100">
+                <div class="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-red-100">
                     <span class="text-sm font-bold text-red-500">Potongan Dansos</span>
                     <span class="font-black text-red-600">- Rp {{ number_format($potonganDansos, 0, ',', '.') }}</span>
                 </div>
-                <div class="flex justify-between items-center p-3 bg-amber-50 rounded-xl border border-amber-100">
+                <div class="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-amber-100">
                     <span class="text-sm font-bold text-amber-600">Tutup Defisit Bln Lalu</span>
                     <span class="font-black text-amber-600">- Rp {{ number_format($kekuranganBulanKemarin, 0, ',', '.') }}</span>
                 </div>
             </div>
 
             <!-- Arisan Cair -->
-            <div class="text-center bg-emerald-50 py-6 rounded-2xl border border-emerald-100 mb-4">
+            <div class="text-center bg-slate-50 py-6 rounded-2xl border border-emerald-100 mb-4">
                 <p class="text-xs font-bold text-emerald-600 uppercase tracking-widest mb-1">Arisan Mendapatkan (Bersih)</p>
                 <p class="text-4xl font-black text-emerald-600">Rp {{ number_format($arisanMendapatkan, 0, ',', '.') }}</p>
             </div>
