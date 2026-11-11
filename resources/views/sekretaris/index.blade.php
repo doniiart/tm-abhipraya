@@ -113,7 +113,7 @@
                 <h4 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-4">Notulensi & Usulan</h4>
                 
                 <!-- Form Input Catatan -->
-                <form action="{{ url('/laporan/sekretaris/simpan-catatan') }}" method="POST">
+                <form id="form-catatan" action="{{ url('/laporan/sekretaris/simpan-catatan') }}" method="POST">
                     @csrf
                     <textarea 
                         name="usulan_saran" 
@@ -137,7 +137,7 @@
                             </button>
                             
                             <!-- Tombol Final / Tutup Buku -->
-                            <button type="submit" name="action" value="final" class="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 px-6 rounded-xl transition-colors" onclick="return confirm('Yakin ingin merekap kesimpulan dan mereset data pertemuan ini?')">
+                            <button type="button" onclick="konfirmasiSimpanFinal()" class="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 px-6 rounded-lg transition-colors">
                                 Simpan Catatan
                             </button>
                             
@@ -156,4 +156,51 @@
         </div>
 
     </div>
+
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function konfirmasiSimpanFinal() {
+            Swal.fire({
+                title: 'Tutup Buku & Simpan Final?',
+                text: "Yakin ingin menyimpan kesimpulan ini sebagai hasil akhir? Data yang sudah difinalisasi akan menjadi kesimpulan resmi pertemuan.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#9333ea', // Warna ungu menyesuaikan bg-purple-600 Anda
+                cancelButtonColor: '#ef4444',
+                confirmButtonText: 'Ya, Simpan Final!',
+                cancelButtonText: 'Batal',
+                backdrop: `rgba(0,0,0,0.5)`,
+                customClass: {
+                    title: 'text-slate-800 font-bold',
+                    popup: 'rounded-2xl shadow-xl'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    let form = document.getElementById('form-catatan');
+                    
+                    // Karena kita memakai type="button", kita sisipkan "action = final" secara otomatis via JS
+                    let hiddenAction = document.createElement('input');
+                    hiddenAction.setAttribute('type', 'hidden');
+                    hiddenAction.setAttribute('name', 'action');
+                    hiddenAction.setAttribute('value', 'final');
+                    form.appendChild(hiddenAction);
+
+                    // Munculkan animasi loading saat form dikirim
+                    Swal.fire({
+                        title: 'Menyimpan...',
+                        text: 'Mohon tunggu sebentar.',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading()
+                        }
+                    });
+
+                    // Submit form ke Laravel
+                    form.submit();
+                }
+            })
+        }
+    </script>
 </x-app-layout>
