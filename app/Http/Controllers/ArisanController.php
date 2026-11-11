@@ -26,16 +26,21 @@ class ArisanController extends Controller
         $potonganDansos = 25000;
         $sisaSetelahDansos = $totalHumas - $potonganDansos; // Rp 270.000
 
+        // Ambil riwayat arisan bulan lalu yang statusnya 'selesai', urutkan dari yang terbaru
+        $riwayatBulanLalu = \App\Models\RiwayatArisan::where('status', 'selesai')
+                            ->orderBy('tanggal', 'desc')
+                            ->first();
+
         // 3. LOGIKA DEFISIT / GALI LUBANG TUTUP LUBANG
         // Nilai ini nantinya diambil dari tabel riwayat_arisan bulan sebelumnya
-        $kekuranganBulanKemarin = 80000; 
+        $kekuranganBulanKemarin = $riwayatBulanLalu ? $riwayatBulanLalu->masih_kurang : 0;
         
         // Bersih yang didapat tuan rumah malam ini
         $arisanMendapatkan = $sisaSetelahDansos - $kekuranganBulanKemarin; // Rp 190.000
 
         // Menghitung defisit baru (misal target hak tuan rumah adalah Rp 285.000)
         $targetHakTuanRumah = 285000; 
-        $masihKurangBulanIni = $targetHakTuanRumah - $arisanMendapatkan; // Rp 100.000
+        $masihKurangBulanIni = max(0, $targetHakTuanRumah - $arisanMendapatkan);
         $daftarAnggota = \App\Models\Anggota::pluck('nama');
 
         return view('arisan.dashboard', compact(
@@ -74,6 +79,22 @@ class ArisanController extends Controller
         
         $targetHak = $request->target_hak;
         $masihKurang = max(0, $targetHak - $arisanMendapatkan);
+        
+        // Ambil baris data pertama (tanpa peduli ID-nya 1, 2, atau berapapun)
+        $kas = \App\Models\KasOrganisasi::first();
+
+        // Jika tabel ternyata benar-benar kosong, perintahkan sistem untuk membuatnya otomatis!
+        if (!$kas) {
+            $kas = new \App\Models\KasOrganisasi();
+            $kas->saldo_dansos = 0;
+        }
+
+        // 1. AMBIL TOTAL SETORAN DANSOS DARI HUMAS MALAM INI (yang statusnya masih 'aktif')
+        $setoranDansosHumas = \App\Models\Iuran::where('status_riwayat', 'aktif')->sum('dansos');
+
+        // 2. TAMBAHKAN KEDUANYA KE BRANKAS PERMANEN (Setoran Humas + Potongan Arisan)
+        $kas->saldo_dansos += ($setoranDansosHumas + $potonganDansos);
+        $kas->save();
 
         // 3. Masukkan ke database Riwayat Arisan
         \App\Models\RiwayatArisan::create([

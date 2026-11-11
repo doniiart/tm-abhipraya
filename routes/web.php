@@ -46,15 +46,16 @@ Route::get('/', function () {
 });
 
 Route::get('/laporan/bendahara', function () {
-        // Ambil data total untuk publik
-        $totalTabungan = \App\Models\Iuran::sum('tabungan');
-        $totalKompensasi = \App\Models\Kompensasi::sum('nominal');
-        
-        // (Opsional) Ambil riwayat kompensasi jika ingin ditampilkan ke publik
-        $riwayatKompensasi = \App\Models\Kompensasi::orderBy('tanggal', 'desc')->get();
+    // Total Tabungan Keseluruhan (Gabungan yang sudah selesai + yang baru diinput Humas)
+    $totalTabungan = \App\Models\Iuran::sum('tabungan');
+    
+    // Saldo Bulan Kemarin (Hanya tabungan dari laporan yang SUDAH DIKUNCI Arisan)
+    $tabunganBulanKemarin = \App\Models\Iuran::where('status_riwayat', 'selesai')->sum('tabungan');
 
-        return view('bendahara.bendahara', compact('totalTabungan', 'totalKompensasi', 'riwayatKompensasi'));
-    })->name('public.bendahara');
+    $totalKompensasi = \App\Models\Kompensasi::sum('nominal');
+
+    return view('bendahara.bendahara', compact('totalTabungan', 'tabunganBulanKemarin', 'totalKompensasi'));
+})->name('public.bendahara');
 
 Route::get('/anggota', [\App\Http\Controllers\AnggotaController::class, 'index'])->name('anggota.index');
 
@@ -70,12 +71,21 @@ Route::get('/dashboard', function () {
     $anggotaRT24 = \App\Models\Anggota::where('rt', '24')->get();
     
     // Hitung total uang di database
-    $totalArisan = \App\Models\Iuran::sum('arisan');
-    $totalTabungan = \App\Models\Iuran::sum('tabungan');
-    $totalDansos = \App\Models\Iuran::sum('dansos');
-    $totalKompensasi = \App\Models\Kompensasi::sum('nominal');
+    $totalArisan = \App\Models\Iuran::where('status_riwayat', 'aktif')->sum('arisan');
+    $totalTabungan = \App\Models\Iuran::where('status_riwayat', 'aktif')->sum('tabungan');
+    $dansosBulanIni = \App\Models\Iuran::where('status_riwayat', 'aktif')->sum('dansos');
+
+    $bulanIni = \Carbon\Carbon::now()->format('Y-m');
+    $tabunganBulanKemarin = \App\Models\Iuran::whereRaw("DATE_FORMAT(tanggal, '%Y-%m') < ?", [$bulanIni])
+                                             ->sum('tabungan');
     
-    return view('dashboard', compact('settings', 'anggotaRT23', 'anggotaRT24', 'totalArisan', 'totalTabungan', 'totalDansos', 'totalKompensasi'));
+    $totalKompensasi = \App\Models\Kompensasi::sum('nominal');
+
+    // === MENGAMBIL SALDO DARI BRANKAS PERMANEN ===
+    $brankas = \App\Models\KasOrganisasi::find(1);
+    $totalSaldoDansos = $brankas ? $brankas->saldo_dansos : 0;
+    
+    return view('dashboard', compact('settings', 'anggotaRT23', 'anggotaRT24', 'totalArisan', 'totalTabungan', 'dansosBulanIni', 'totalSaldoDansos', 'totalKompensasi', 'tabunganBulanKemarin'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth'])->prefix('admin')->group(function () {

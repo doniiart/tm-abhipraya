@@ -32,7 +32,7 @@
         </div>
 
         <!-- GRID DATA OTOMATIS DARI DIVISI LAIN -->
-        <h3 class="text-lg font-bold text-slate-800 mb-4 border-l-4 border-purple-600 pl-3">Rekapitulasi Divisi (Otomatis)</h3>
+        <h3 class="text-lg font-bold text-slate-800 mb-4 border-l-4 border-purple-600 pl-3">Rekapitulasi Petugas (Otomatis)</h3>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
             

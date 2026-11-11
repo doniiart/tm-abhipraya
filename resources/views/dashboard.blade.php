@@ -125,8 +125,21 @@
                         </div>
                         <div class="relative z-10">
                             <p class="text-xs font-medium text-slate-500 mb-1">Total Saldo Dansos Tersisa:</p>
+
+                            @php
+                                // 1. Ambil Saldo Permanen (yang sudah dikunci bulan-bulan lalu)
+                                $brankas = \App\Models\KasOrganisasi::first();
+                                $saldoPermanen = $brankas ? $brankas->saldo_dansos : 0;
+                                // 2. Ambil Setoran Humas malam ini (yang belum dikunci / status 'aktif')
+                                $setoranMalamIni = \App\Models\Iuran::where('status_riwayat', 'aktif')->sum('dansos');
+                                // 3. Siapkan potongan arisan (Jika malam ini ada setoran masuk, pasti ada potongan 25.000)
+                                $potonganArisanMalamIni = ($setoranMalamIni > 0) ? 25000 : 0;
+                                // 4. Gabungkan semuanya secara REALTIME
+                                $saldoUtuh = $saldoPermanen + $setoranMalamIni + $potonganArisanMalamIni;
+                            @endphp
+
                             <h3 class="text-3xl font-black text-slate-800 tracking-tight">
-                                Rp {{ number_format($totalSaldoDansos, 0, ',', '.') }}
+                                Rp {{ number_format($saldoUtuh, 0, ',', '.') }}
                             </h3>
                         </div>
                     </div>
@@ -144,8 +157,12 @@
                                     <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Bulan Kemarin</span>
                                 </div>
                                 <p class="text-[10px] text-slate-400 mb-1 line-clamp-1">Total Dansos + Arisan</p>
+                                @php
+                                    $brankasDansos = \App\Models\KasOrganisasi::first();
+                                    $saldoFixBulanKemarin = $brankasDansos ? $brankasDansos->saldo_dansos : 0;
+                                @endphp
                                 <h4 class="text-sm sm:text-base font-bold text-slate-800">
-                                    Rp {{ number_format($pemasukanBulanKemarin, 0, ',', '.') }}
+                                    Rp {{ number_format($saldoFixBulanKemarin, 0, ',', '.') }}
                                 </h4>
                             </div>
 
@@ -534,6 +551,36 @@
                         <tr class="hover:bg-slate-50 transition-colors">
                             <td class="py-3 px-4 font-bold sticky left-0 bg-white z-10 border-r border-gray-100 {{ $anggota->status == 'Sekolah' ? 'text-sky-600' : 'text-slate-800' }}">
                                 {{ $anggota->nama }}
+
+                                @php
+                                    $punyaTunggakan = false; // Setel awal selalu false
+
+                                    // 1. Ambil data kumpulan TERAKHIR yang sudah berstatus selesai
+                                    $iuranTerakhirSelesai = \App\Models\Iuran::where('status_riwayat', 'selesai')
+                                                                            ->orderBy('tanggal', 'desc')
+                                                                            ->first();
+
+                                    if ($iuranTerakhirSelesai) {
+                                        // Gunakan TANGGAL dari iuran terakhir tersebut sebagai patokan
+                                        $tanggalAgendaLalu = $iuranTerakhirSelesai->tanggal;
+                                        
+                                        // 2. Cek apakah anggota ini ADA datanya di TANGGAL kumpulan terakhir tersebut
+                                        $sudahAsokAgendaLalu = \App\Models\Iuran::where('anggota_id', $anggota->id)
+                                                                                ->where('tanggal', $tanggalAgendaLalu)
+                                                                                ->exists();
+
+                                        // 3. Jika TIDAK ada data (belum asok), maka dia menunggak
+                                        if (!$sudahAsokAgendaLalu) {
+                                            $punyaTunggakan = true;
+                                        }
+                                    }
+                                @endphp
+
+                                @if($punyaTunggakan)
+                                    <span class="ml-2 text-xs font-bold text-red-600">
+                                        Tunggakan
+                                    </span>
+                                @endif
                             </td>
                             <td class="py-3 px-4 text-center">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-medium {{ $anggota->status == 'Sekolah' ? 'bg-sky-50 text-sky-700' : 'bg-emerald-50 text-emerald-700' }}">
@@ -583,6 +630,36 @@
                         <tr class="hover:bg-slate-50 transition-colors">
                             <td class="py-3 px-4 font-bold sticky left-0 bg-white z-10 border-r border-gray-100 {{ $anggota->status == 'Sekolah' ? 'text-sky-600' : 'text-slate-800' }}">
                                 {{ $anggota->nama }}
+
+                                @php
+                                    $punyaTunggakan = false; // Setel awal selalu false
+
+                                    // 1. Ambil data kumpulan TERAKHIR yang sudah berstatus selesai
+                                    $iuranTerakhirSelesai = \App\Models\Iuran::where('status_riwayat', 'selesai')
+                                                                            ->orderBy('tanggal', 'desc')
+                                                                            ->first();
+
+                                    if ($iuranTerakhirSelesai) {
+                                        // Gunakan TANGGAL dari iuran terakhir tersebut sebagai patokan
+                                        $tanggalAgendaLalu = $iuranTerakhirSelesai->tanggal;
+                                        
+                                        // 2. Cek apakah anggota ini ADA datanya di TANGGAL kumpulan terakhir tersebut
+                                        $sudahAsokAgendaLalu = \App\Models\Iuran::where('anggota_id', $anggota->id)
+                                                                                ->where('tanggal', $tanggalAgendaLalu)
+                                                                                ->exists();
+
+                                        // 3. Jika TIDAK ada data (belum asok), maka dia menunggak
+                                        if (!$sudahAsokAgendaLalu) {
+                                            $punyaTunggakan = true;
+                                        }
+                                    }
+                                @endphp
+
+                                @if($punyaTunggakan)
+                                    <span class="ml-2 text-xs font-bold text-red-600">
+                                        Tunggakan
+                                    </span>
+                                @endif
                             </td>
                             <td class="py-3 px-4 text-center">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-medium {{ $anggota->status == 'Sekolah' ? 'bg-sky-50 text-sky-700' : 'bg-emerald-50 text-emerald-700' }}">

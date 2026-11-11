@@ -17,7 +17,7 @@ class HumasController extends Controller
         $anggotaRT24 = \App\Models\Anggota::where('rt', '24')->get();
 
         // 1. Ambil data agenda
-        $agendas = \App\Models\MeetingAgenda::orderBy('tanggal', 'desc')->get();
+        $agendas = \App\Models\MeetingAgenda::orderBy('id', 'desc')->get();
 
         // --- HITUNG KEUANGAN DANSOS ---
         // Pemasukan Bulan Ini (Misal: Bulan Oktober 2026 atau bulan berjalan)
@@ -35,13 +35,11 @@ class HumasController extends Controller
         $pengeluaranSakitTakziah = 100000; 
         $talanganTabungan = 0;
 
-        // Total Saldo Dansos Tersisa
-        // Rumus: (Bulan Kemarin + Pemasukan Bulan Ini) - Pengeluaran + Talangan
-        $totalSaldoDansos = ($pemasukanBulanKemarin + $pemasukanBulanIni) - $pengeluaranSakitTakziah + $talanganTabungan;
+        // === MENGAMBIL SALDO DARI BRANKAS PERMANEN ===
+        $brankas = \App\Models\KasOrganisasi::find(1);
+        $totalSaldoDansos = $brankas ? $brankas->saldo_dansos : 0;
 
-        $agendaSebelumnya = \App\Models\MeetingAgenda::where('status', 'selesai')
-                                ->orderBy('id', 'desc')
-                                ->first();
+        $agendaSebelumnya = \App\Models\MeetingAgenda::orderBy('created_at', 'desc')->first();
 
        // 1. Ambil 2 Agenda Terakhir yang diurutkan berdasarkan ID terbaru
         // (Agenda index [0] adalah agenda bulan ini yang sedang berjalan)
@@ -142,6 +140,11 @@ class HumasController extends Controller
                 $iuran->tabungan   = $tabungan;
                 $iuran->dansos     = $dansos;
                 $iuran->save();
+                $kas = \App\Models\KasOrganisasi::find(1);
+                if ($kas) {
+                    $kas->saldo_dansos += $dansos;
+                    $kas->save();
+                }
             }
         }
 

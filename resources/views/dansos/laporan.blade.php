@@ -133,7 +133,11 @@
                                     <p class="text-sm font-bold text-slate-800">Total Akumulasi</p>
                                     <p class="text-xs text-slate-500 mt-1">Saldo Bulan Lalu</p>
                                 </div>
-                                <span class="text-sm font-bold text-slate-800">Rp {{ number_format($totalBulanKemarin, 0, ',', '.') }}</span>
+                                @php
+                                    $brankasPublik = \App\Models\KasOrganisasi::first();
+                                    $saldoFixBulanKemarinPublik = $brankasPublik ? $brankasPublik->saldo_dansos : 0;
+                                @endphp
+                                <span class="text-sm font-bold text-slate-800">Rp {{ number_format($saldoFixBulanKemarinPublik, 0, ',', '.') }}</span>
                             </div>
                         </div>
                     </div>

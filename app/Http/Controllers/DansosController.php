@@ -16,6 +16,9 @@ class DansosController extends Controller
 
     public function store(Request $request)
     {
+        $brankas = \App\Models\KasOrganisasi::find(1);
+        $brankas->saldo_dansos -= $request->nominal; // Kurangi saldo sesuai yang dikeluarkan
+        $brankas->save();
         $request->validate([
             'jenis' => 'required|in:Sakit,Takziah',
             'keterangan' => 'required|string|max:255',
@@ -61,36 +64,32 @@ class DansosController extends Controller
 
     public function laporanPublik()
     {
-        // 1. Mengambil data Pengeluaran & Talangan (sudah ada sebelumnya)
+        // 1. Mengambil data Pengeluaran & Talangan
         $pengeluaran = \App\Models\PengeluaranDansos::latest()->get();
         $talangan = \App\Models\TalanganDansos::latest()->get();
 
-        // 2. Menghitung Total Bulan Kemarin & Bulan Ini (TAMBAHAN BARU)
-        // Menggunakan Carbon untuk mendapatkan bulan dan tahun
-        $bulanKemarin = \Carbon\Carbon::now()->subMonth()->month;
-        $tahunKemarin = \Carbon\Carbon::now()->subMonth()->year;
-        $bulanIni = \Carbon\Carbon::now()->month;
-        $tahunIni = \Carbon\Carbon::now()->year;
+        // 2. MENGHITUNG KEUANGAN (Samakan dengan logika Dashboard menggunakan kolom 'tanggal')
+        $bulanIni = \Carbon\Carbon::now()->format('Y-m');
 
-        // Contoh Query (Asumsi nama modelnya Iuran dan menggunakan kolom created_at)
-        // Silakan sesuaikan 'Iuran', 'dansos', dan 'arisan' dengan nama tabel/model Mas Doni yang sebenarnya
-        $totalBulanKemarin = \App\Models\Iuran::whereMonth('created_at', $bulanKemarin)
-                                              ->whereYear('created_at', $tahunKemarin)
-                                              ->sum('dansos') 
-                           + \App\Models\Iuran::whereMonth('created_at', $bulanKemarin)
-                                              ->whereYear('created_at', $tahunKemarin)
-                                              ->sum('arisan');
+        // Total bulan kemarin (akumulasi semua dansos & arisan sebelum bulan ini)
+        $totalBulanKemarin = \App\Models\Iuran::whereRaw("DATE_FORMAT(tanggal, '%Y-%m') < ?", [$bulanIni])
+            ->sum(\Illuminate\Support\Facades\DB::raw('dansos + arisan'));
 
-        $setoranBulanIni = \App\Models\Iuran::whereMonth('created_at', $bulanIni)
-                                            ->whereYear('created_at', $tahunIni)
-                                            ->sum('dansos');
+        // Setoran masuk untuk bulan ini
+        $setoranBulanIni = \App\Models\Iuran::whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanIni])
+            ->sum('dansos');
 
-        // 3. Mengirim SEMUA variabel ke halaman View
+        // === MENGAMBIL SALDO DARI BRANKAS PERMANEN ===
+        $brankas = \App\Models\KasOrganisasi::first();
+        $totalSaldoDansos = $brankas ? $brankas->saldo_dansos : 0;
+
+        // 3. Mengirim SEMUA variabel ke halaman View Laporan Publik
         return view('dansos.laporan', compact(
-            'pengeluaran', 
-            'talangan', 
-            'totalBulanKemarin', 
-            'setoranBulanIni'
+            'pengeluaran',
+            'talangan',
+            'totalBulanKemarin',
+            'setoranBulanIni',
+            'totalSaldoDansos'
         ));
     }
 }

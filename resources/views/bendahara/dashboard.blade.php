@@ -80,6 +80,10 @@
                     <div class="border-t md:border-t-0 md:border-l border-slate-100 pt-3 md:pt-0 md:pl-4 flex flex-col justify-center space-y-2">
                         <div class="flex justify-between items-center text-[11px] pb-1 border-b border-dashed border-slate-200">
                             <span class="text-slate-500">Saldo Bulan Kemarin:</span>
+                            @php
+                                // Ambil semua tabungan dari laporan pertemuan yang SUDAH DIKUNCI (selesai)
+                                $tabunganBulanKemarin = \App\Models\Iuran::where('status_riwayat', 'selesai')->sum('tabungan');
+                            @endphp
                             <span class="font-bold text-slate-700">Rp {{ number_format($tabunganBulanKemarin, 0, ',', '.') }}</span>
                         </div>
                         <div class="flex justify-between items-center text-[11px] pb-1 border-b border-dashed border-slate-200">

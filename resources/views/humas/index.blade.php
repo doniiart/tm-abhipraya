@@ -58,11 +58,33 @@
                                         {{ $anggota->nama }}
                                         
                                         @php
-                                            // Cek tunggakan bulan lalu dengan lebih akurat
-                                            $bulanLalu = \Carbon\Carbon::now()->subMonth()->format('Y-m');
-                                            $punyaTunggakan = !\App\Models\Iuran::where('anggota_id', $anggota->id)
-                                                ->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanLalu])
-                                                ->exists();
+                                            $punyaTunggakan = false; // Deklarasi default untuk setiap anggota
+
+                                            // 1. Ambil Kumpulan Terakhir yang Selesai
+                                            $kumpulanTerakhirSelesai = \App\Models\Iuran::where('status_riwayat', 'selesai')
+                                                ->orderBy('tanggal', 'desc')
+                                                ->first();
+
+                                            // Pastikan ada kumpulan terakhir yang selesai
+                                            if ($kumpulanTerakhirSelesai) {
+                                                $bulanLaluDatabase = \Carbon\Carbon::parse($kumpulanTerakhirSelesai->tanggal)->format('Y-m');
+                                                $bulanIniLaptop = \Carbon\Carbon::now()->format('Y-m');
+
+                                                // 2. KUNCI UTAMA: Cek apakah bulan saat ini (laptop) LEBIH BESAR dari bulan terakhir di database
+                                                if ($bulanIniLaptop > $bulanLaluDatabase) {
+                                                    
+                                                    // 3. Cek riwayat asok anggota di bulan lalu tersebut
+                                                    $sudahAsokBulanLalu = \App\Models\Iuran::where('anggota_id', $anggota->id)
+                                                        ->where('status_riwayat', 'selesai') // Pastikan kita mengecek yang berstatus selesai
+                                                        ->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanLaluDatabase])
+                                                        ->exists();
+
+                                                    // Jika TIDAK ADA riwayat asok, set tunggakan menjadi true
+                                                    if (!$sudahAsokBulanLalu) {
+                                                        $punyaTunggakan = true;
+                                                    }
+                                                }
+                                            }
                                         @endphp
 
                                         @if($punyaTunggakan)
@@ -84,25 +106,6 @@
                                         Rp {{ $anggota->status == 'Sekolah' ? '8.000' : '10.000' }}
                                     </td>
 
-                                    <!-- 4. KOLOM KELIPATAN BAYAR -->
-                                    <td class="py-3 px-4 text-center">
-
-                                        @if($nunggak)
-                                            <!-- Jika Nunggak: Otomatis pilih 2x dan beri warna merah sebagai pengingat -->
-                                            <select name="kelipatan[{{ $anggota->id }}]" class="text-xs font-bold rounded-lg border-red-300 bg-red-50 text-red-700 py-1 px-2 focus:ring-red-500 focus:border-red-500 shadow-sm animate-pulse">
-                                                <option value="1">1x</option>
-                                                <option value="2" selected>2x (Nunggak)</option>
-                                                <option value="3">3x</option>
-                                            </select>
-                                        @else
-                                            <!-- Jika Normal: Otomatis pilih 1x -->
-                                            <select name="kelipatan[{{ $anggota->id }}]" class="text-xs font-bold rounded-lg border-slate-200 py-1 px-2 focus:ring-red-500 focus:border-red-500">
-                                                <option value="1" selected>1x (Normal)</option>
-                                                <option value="2">2x</option>
-                                                <option value="3">3x</option>
-                                            </select>
-                                        @endif
-                                    </td>
 
                                     <!-- 5. CHECKBOX BAYAR -->
                                     <td class="py-3 px-4 text-center">
