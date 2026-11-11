@@ -106,17 +106,18 @@ Route::middleware('auth')->group(function () {
     Route::put('/persewaan/sewa/{id}/kembalikan', [SewaController::class, 'kembalikan'])->name('sewa.kembalikan');
     Route::delete('/persewaan/sewa/{id}', [SewaController::class, 'destroy'])->name('sewa.destroy');
     Route::get('/profil/edit', [App\Http\Controllers\ProfilController::class, 'edit']);
-    Route::get('/profil', function () {
+    Route::get('/arisan/dashboard', [ArisanController::class, 'index'])->name('arisan.dashboard');
+    Route::post('/arisan/simpan', [\App\Http\Controllers\ArisanController::class, 'simpanLaporan'])->name('arisan.simpan');
+    Route::get('/arisan/riwayat', [\App\Http\Controllers\ArisanController::class, 'riwayat'])->name('arisan.riwayat');
+
+});
+
+Route::get('/profil', function () {
     // Ambil baris pertama dari tabel setting_webs
     $settings = \App\Models\SettingWeb::first(); 
     
     // Kirim variabel $settings ke tampilan profil.blade.php
     return view('profil', compact('settings')); 
-});
-    Route::get('/arisan/dashboard', [ArisanController::class, 'index'])->name('arisan.dashboard');
-    Route::post('/arisan/simpan', [\App\Http\Controllers\ArisanController::class, 'simpanLaporan'])->name('arisan.simpan');
-    Route::get('/arisan/riwayat', [\App\Http\Controllers\ArisanController::class, 'riwayat'])->name('arisan.riwayat');
-
 });
 
 Route::middleware(['auth', 'role:bendahara'])->prefix('admin')->group(function () {
