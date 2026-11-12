@@ -93,10 +93,10 @@
                                         <span class="text-xs font-bold text-gray-400">{{ $item->user->name ?? 'Admin' }}</span>
                                     </div>
                                     
-                                    <form action="{{ route('galeri.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus foto {{ $item->judul }}?');">
+                                    <form action="{{ route('galeri.destroy', $item->id) }}" method="POST" class="form-hapus" data-judul="{{ $item->judul }}">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1 rounded-lg text-xs font-bold transition-colors">
+                                        <button type="button" class="btn-hapus-swal text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1 rounded-lg text-xs font-bold transition-colors">
                                             Hapus
                                         </button>
                                     </form>
@@ -114,4 +114,36 @@
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.querySelectorAll('.btn-hapus-swal').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Mengambil form terdekat dan nama judul foto
+            let form = this.closest('form');
+            let judul = form.getAttribute('data-judul') || 'foto ini';
+
+            // Memunculkan SweetAlert2
+            Swal.fire({
+                title: 'Hapus Kegiatan?',
+                text: "Anda yakin ingin menghapus data '" + judul + "'? Foto tidak dapat dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444', // Warna merah ekor Tailwind (red-500)
+                cancelButtonColor: '#6b7280', // Warna abu-abu Tailwind (gray-500)
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal',
+                reverseButtons: true // Membalik posisi tombol agar lebih rapi
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Jika user klik 'Ya', form baru disubmit
+                    form.submit();
+                }
+            })
+        });
+    });
+</script>
 </x-app-layout>
