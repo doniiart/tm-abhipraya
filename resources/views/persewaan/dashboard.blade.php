@@ -28,7 +28,7 @@
         </div>
         <h3 class="text-lg font-black text-slate-800 tracking-tight mb-1">Beli / Ganti Baru</h3>
         <p class="text-xs text-slate-500 font-medium mb-4">Laporan ganti barang rusak dan upload foto nota pembelian.</p>
-        <a href="#" class="text-xs font-bold text-orange-600 hover:text-orange-700">Upload Nota &rarr;</a>
+        <a href="{{ route('pembelian.index') }}" class="text-xs font-bold text-orange-600 hover:text-orange-700">Upload Nota &rarr;</a>
     </div>
 
 </div>

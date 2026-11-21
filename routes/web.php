@@ -19,6 +19,7 @@ use App\Http\Controllers\ArisanController;
 use App\Http\Controllers\PushNotificationController;
 use App\Notifications\TestPushNotification;
 use App\Http\Controllers\SekretarisController;
+use App\Http\Controllers\PembelianAsetController;
 
 Route::get('/', function () {
     $settings = SettingWeb::first();
@@ -105,6 +106,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/persewaan/sewa', [SewaController::class, 'store'])->name('sewa.store');
     Route::put('/persewaan/sewa/{id}/kembalikan', [SewaController::class, 'kembalikan'])->name('sewa.kembalikan');
     Route::delete('/persewaan/sewa/{id}', [SewaController::class, 'destroy'])->name('sewa.destroy');
+    Route::get('/persewaan/pembelian', [PembelianAsetController::class, 'index'])->name('pembelian.index');
+    Route::post('/persewaan/pembelian', [PembelianAsetController::class, 'store'])->name('pembelian.store');
+    Route::delete('/persewaan/pembelian/{id}', [PembelianAsetController::class, 'destroy'])->name('pembelian.destroy');
     Route::get('/profil/edit', [App\Http\Controllers\ProfilController::class, 'edit']);
     Route::get('/arisan/dashboard', [ArisanController::class, 'index'])->name('arisan.dashboard');
     Route::post('/arisan/simpan', [\App\Http\Controllers\ArisanController::class, 'simpanLaporan'])->name('arisan.simpan');
