@@ -381,15 +381,37 @@
 
             {{-- TOMBOL NOTIFIKASI KHUSUS ANGGOTA BIASA --}}
             @if(auth()->user()->hasRole('anggota'))
-            <div class="mt-6 bg-yellow-50 rounded-3xl p-6 border border-yellow-200/50 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
-                <div>
-                    <h4 class="text-lg font-bold text-yellow-900 mb-1">🔔 Nyalakan Pengingat Otomatis</h4>
-                    <p class="text-yellow-700 text-sm font-medium">Terima notifikasi di layar HP Anda saat kumpulan akan dimulai.</p>
+            <!-- Notification Card Container -->
+                <div id="notification-card" class="mt-6 relative overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-300 group">
+                
+                <!-- Efek ambient blur di latar belakang -->
+                <div class="absolute -top-6 -right-6 w-24 h-24 bg-amber-300 rounded-full mix-blend-multiply filter blur-2xl opacity-40 group-hover:opacity-60 transition-opacity duration-500"></div>
+
+                <div class="relative z-10 flex flex-col gap-3">
+                    <!-- Header & Ikon -->
+                    <div class="flex items-center gap-3">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-full bg-amber-100 text-amber-600 shadow-inner">
+                        <svg class="w-5 h-5 transition-transform duration-300 group-hover:-rotate-12 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                        </svg>
+                    </div>
+                    <h4 class="font-bold text-amber-900 text-sm">Nyalakan Pengingat Otomatis</h4>
+                    </div>
+
+                    <!-- Deskripsi -->
+                    <p class="text-xs text-amber-800/80 leading-relaxed">
+                    Terima notifikasi di layar HP Anda saat kumpulan akan dimulai. Jangan sampai terlewat!
+                    </p>
+
+                    <!-- Tombol Interaktif -->
+                    <button id="btn-notify" class="mt-2 w-full flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold text-sm py-2.5 px-4 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm transition-all duration-200">
+                    <span id="btn-text">Aktifkan Sekarang</span>
+                    <svg id="btn-icon" class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                    </svg>
+                    </button>
                 </div>
-                <button id="tombol-notif" class="shrink-0 bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-6 py-3 rounded-2xl font-bold transition shadow-sm hover:shadow-md transform hover:-translate-y-0.5">
-                    Aktifkan Sekarang
-                </button>
-            </div>
+                </div>
             @endif
 
             <!-- ========================================== -->
@@ -862,5 +884,59 @@
             });
         }
     });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const btnNotify = document.getElementById('btn-notify');
+            const btnText = document.getElementById('btn-text');
+            const btnIcon = document.getElementById('btn-icon');
+
+            // Cek jika izin sudah pernah diberikan sebelumnya
+            if (Notification.permission === 'granted') {
+                setSuccessState();
+            }
+
+            btnNotify.addEventListener('click', async () => {
+                // State 1: Loading / Meminta Izin
+                btnNotify.classList.remove('from-amber-500', 'to-orange-500', 'hover:-translate-y-0.5');
+                btnNotify.classList.add('bg-gray-400', 'cursor-wait');
+                btnText.innerText = 'Meminta Izin...';
+                
+                // Ubah ikon menjadi spinner loading
+                btnIcon.classList.add('animate-spin');
+                btnIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>';
+
+                try {
+                    // Trigger browser prompt
+                    const permission = await Notification.requestPermission();
+                    
+                    // Memberikan sedikit delay agar transisi UI terlihat halus
+                    setTimeout(() => {
+                        btnIcon.classList.remove('animate-spin');
+                        
+                        if (permission === "granted") {
+                            setSuccessState();
+                        } else {
+                            setErrorState();
+                        }
+                    }, 600); 
+
+                } catch (error) {
+                    console.error("Notifikasi error:", error);
+                    setErrorState();
+                }
+            });
+
+            function setSuccessState() {
+                btnNotify.className = "mt-2 w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-green-500 text-white font-semibold text-sm py-2.5 px-4 rounded-xl shadow cursor-default transition-all duration-300";
+                btnText.innerText = 'Notifikasi Aktif';
+                btnIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>';
+            }
+
+            function setErrorState() {
+                btnNotify.className = "mt-2 w-full flex items-center justify-center gap-2 bg-gradient-to-r from-red-500 to-rose-500 text-white font-semibold text-sm py-2.5 px-4 rounded-xl shadow transition-all duration-300";
+                btnText.innerText = 'Izin Ditolak';
+                btnIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>';
+            }
+        });
     </script>
 </x-app-layout>
