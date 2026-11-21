@@ -410,7 +410,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
                     </svg>
                     </button>
-                </div>
+                </div>                  
                 </div>
             @endif
 
@@ -795,148 +795,205 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-    // Fungsi helper untuk mengubah VAPID key string ke format biner (Uint8Array) yang valid di browser
-    function urlBase64ToUint8Array(base64String) {
-        const padding = '='.repeat((4 - base64String.length % 4) % 4);
-        const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
-        const rawData = window.atob(base64);
-        const outputArray = new Uint8Array(rawData.length);
-        for (let i = 0; i < rawData.length; ++i) {
-            outputArray[i] = rawData.charCodeAt(i);
-        }
-        return outputArray;
-    }
-
-    document.getElementById('tombol-notif')?.addEventListener('click', async function() {
-        if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-            alert('Browser HP Anda tidak mendukung Web Push Notification.');
-            return;
+        // Fungsi helper untuk mengubah VAPID key string ke format biner (Uint8Array) yang valid di browser
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+            for (let i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
+            }
+            return outputArray;
         }
 
-        try {
-            // 1. Daftarkan Service Worker dan tunggu sampai benar-benar siap
-            const registration = await navigator.serviceWorker.register('/sw.js');
-            await navigator.serviceWorker.ready;
+        // Deteksi jenis perangkat & browser HP anggota
+        function cekLingkunganBrowser() {
+            const ua = navigator.userAgent || navigator.vendor || window.opera;
+            const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+            const isInAppBrowser = /WhatsApp|FBAN|FBAV|Instagram|Line|MicroMessenger|wv\)/i.test(ua);
 
-            // 2. Minta izin ke browser
-            const permissionResult = await Notification.requestPermission();
-            if (permissionResult !== 'granted') {
-                alert('Izin notifikasi ditolak.');
-                return;
-            }
-
-            // 3. Ambil VAPID Public Key dari konfigurasi Laravel (.env)
-            const vapidPublicKey = '{{ config("webpush.vapid.public_key") }}';
-            if (!vapidPublicKey) {
-                alert('VAPID Public Key belum dikonfigurasi di file .env Laravel!');
-                return;
-            }
-            
-            // 4. Konversi VAPID key agar formatnya terbaca oleh PushManager
-            const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
-
-            // 5. Lakukan subscribe perangkat
-            const subscription = await registration.pushManager.subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: convertedVapidKey
-            });
-
-            // 6. Kirim data subscription ke route Laravel
-            const response = await fetch('/push-subscribe', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify(subscription)
-            });
-
-            if (response.ok) {
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end', // Muncul dari pojok kanan atas
-                    icon: 'success',
-                    title: 'Notifikasi Aktif!',
-                    text: 'Perangkat Anda siap menerima pengingat otomatis.',
-                    showConfirmButton: false,
-                    timer: 3500, // Akan hilang otomatis dalam 3,5 detik
-                    timerProgressBar: true,
-                    background: '#ffffff',
-                    color: '#0f172a', // text-slate-900
-                    customClass: {
-                        popup: 'rounded-2xl shadow-lg border border-slate-100' // Menyatu dengan tema web
-                    },
-                    didOpen: (toast) => {
-                        toast.addEventListener('mouseenter', Swal.stopTimer)
-                        toast.addEventListener('mouseleave', Swal.resumeTimer)
-                    }
-                });
-            } else {
-                alert('Gagal menyimpan langganan ke server database.');
-            }
-        } catch (error) {
-            console.error('Error saat mengaktifkan notifikasi:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Terjadi kesalahan sistem: ' + error.message,
-                confirmButtonColor: '#0f172a'
-            });
+            return { isIOS, isStandalone, isInAppBrowser };
         }
-    });
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const btnNotify = document.getElementById('btn-notify');
+        document.addEventListener('DOMContentLoaded', function() {
+            const tombolNotif = document.getElementById('btn-notify');
             const btnText = document.getElementById('btn-text');
-            const btnIcon = document.getElementById('btn-icon');
+            if (!tombolNotif) return;
 
-            // Cek jika izin sudah pernah diberikan sebelumnya
-            if (Notification.permission === 'granted') {
-                setSuccessState();
+            // Jika izin notifikasi sudah aktif sebelumnya, perbarui teks tombolnya
+            if ('Notification' in window && Notification.permission === 'granted') {
+                if (btnText) btnText.textContent = 'Notifikasi Aktif ✓';
             }
 
-            btnNotify.addEventListener('click', async () => {
-                // State 1: Loading / Meminta Izin
-                btnNotify.classList.remove('from-amber-500', 'to-orange-500', 'hover:-translate-y-0.5');
-                btnNotify.classList.add('bg-gray-400', 'cursor-wait');
-                btnText.innerText = 'Meminta Izin...';
-                
-                // Ubah ikon menjadi spinner loading
-                btnIcon.classList.add('animate-spin');
-                btnIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>';
+            tombolNotif.addEventListener('click', async function() {
+                const { isIOS, isStandalone, isInAppBrowser } = cekLingkunganBrowser();
+
+                // 1. Jika anggota membuka link langsung dari dalam WhatsApp / In-App Browser
+                if (isInAppBrowser) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Buka Lewat Browser Utama',
+                        html: `
+                            <div class="text-left text-sm text-slate-600 space-y-2">
+                                <p>Anda membuka website ini langsung dari dalam aplikasi (seperti WhatsApp), sehingga fitur notifikasi dibatasi.</p>
+                                <p class="font-bold text-slate-800">Cara mengaktifkan:</p>
+                                <ol class="list-decimal list-inside space-y-1">
+                                    <li>Ketuk ikon <b>titik tiga (⋮)</b> di pojok kanan atas layar.</li>
+                                    <li>Pilih <b>"Buka di Chrome"</b> atau <b>"Buka di Browser"</b>.</li>
+                                    <li>Login kembali dan klik tombol <b>Aktifkan Sekarang</b>.</li>
+                                </ol>
+                            </div>
+                        `,
+                        confirmButtonText: 'Siap, Paham',
+                        confirmButtonColor: '#f59e0b'
+                    });
+                    return;
+                }
+
+                // 2. Khusus pengguna iPhone / iPad (iOS) yang belum menambahkan ke Layar Utama
+                if (isIOS && !isStandalone) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Panduan Khusus Pengguna iPhone',
+                        html: `
+                            <div class="text-left text-sm text-slate-600 space-y-2">
+                                <p>Sistem iPhone (iOS) mewajibkan website dipasang ke layar utama terlebih dahulu agar bisa menerima notifikasi pengingat:</p>
+                                <ol class="list-decimal list-inside space-y-1.5 mt-2">
+                                    <li>Pastikan membuka alamat website ini di browser <b>Safari</b> (bukan Chrome).</li>
+                                    <li>Ketuk ikon <b>Bagikan / Share</b> (kotak dengan panah ke atas) di bagian bawah layar.</li>
+                                    <li>Geser ke bawah dan pilih <b>"Tambah ke Layar Utama"</b> (<i>Add to Home Screen</i>).</li>
+                                    <li>Buka aplikasi <b>Tunas Muda Abhipraya</b> dari ikon baru di layar HP Anda, lalu klik <b>Aktifkan Sekarang</b>.</li>
+                                </ol>
+                            </div>
+                        `,
+                        confirmButtonText: 'Mengerti',
+                        confirmButtonColor: '#f59e0b'
+                    });
+                    return;
+                }
+
+                // 3. Cek dukungan Push Notification pada browser umum
+                if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Browser Tidak Mendukung',
+                        text: 'Silakan buka website ini menggunakan browser Google Chrome versi terbaru agar dapat menerima notifikasi.',
+                        confirmButtonColor: '#f59e0b'
+                    });
+                    return;
+                }
+
+                // 4. Jika izin notifikasi sudah terlanjur diblokir ('denied') di pengaturan browser HP
+                if (Notification.permission === 'denied') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Izin Notifikasi Masih Terblokir',
+                        html: `
+                            <div class="text-left text-sm text-slate-600 space-y-2">
+                                <p>Browser HP Anda memblokir izin notifikasi untuk website ini.</p>
+                                <p class="font-bold text-slate-800">Cara membukanya:</p>
+                                <ol class="list-decimal list-inside space-y-1">
+                                    <li>Ketuk ikon <b>pengaturan / gembok</b> di sebelah kiri alamat <b>tunasmudaabhipraya.my.id</b> (bagian atas browser).</li>
+                                    <li>Pilih menu <b>Izin (Permissions)</b> &rarr; <b>Notifikasi</b>.</li>
+                                    <li>Ubah menjadi <b>Izinkan (Allow)</b>, lalu muat ulang (refresh) halaman ini.</li>
+                                </ol>
+                            </div>
+                        `,
+                        confirmButtonText: 'Oke, Saya Coba',
+                        confirmButtonColor: '#f59e0b'
+                    });
+                    return;
+                }
 
                 try {
-                    // Trigger browser prompt
-                    const permission = await Notification.requestPermission();
-                    
-                    // Memberikan sedikit delay agar transisi UI terlihat halus
-                    setTimeout(() => {
-                        btnIcon.classList.remove('animate-spin');
-                        
-                        if (permission === "granted") {
-                            setSuccessState();
-                        } else {
-                            setErrorState();
-                        }
-                    }, 600); 
+                    // 5. Daftarkan Service Worker dan tunggu sampai benar-benar siap
+                    const registration = await navigator.serviceWorker.register('/sw.js');
+                    await navigator.serviceWorker.ready;
 
+                    // 6. Minta izin ke browser
+                    const permissionResult = await Notification.requestPermission();
+                    if (permissionResult !== 'granted') {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Izin Notifikasi Belum Diizinkan',
+                            text: 'Silakan klik tombol Aktifkan Sekarang lagi, lalu pilih "Izinkan" (Allow) pada pop-up yang muncul di atas layar.',
+                            confirmButtonColor: '#f59e0b'
+                        });
+                        return;
+                    }
+
+                    // 7. Ambil VAPID Public Key dari konfigurasi Laravel (.env)
+                    const vapidPublicKey = '{{ config("webpush.vapid.public_key") }}';
+                    if (!vapidPublicKey) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Konfigurasi Belum Lengkap',
+                            text: 'VAPID Public Key belum dikonfigurasi di file .env Laravel!',
+                            confirmButtonColor: '#0f172a'
+                        });
+                        return;
+                    }
+
+                    // 8. Konversi VAPID key agar formatnya terbaca oleh PushManager
+                    const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
+
+                    // 9. Lakukan subscribe perangkat
+                    const subscription = await registration.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: convertedVapidKey
+                    });
+
+                    // 10. Kirim data subscription ke route Laravel
+                    const response = await fetch('/push-subscribe', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify(subscription)
+                    });
+
+                    if (response.ok) {
+                        if (btnText) btnText.textContent = 'Notifikasi Aktif ✓';
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Notifikasi Aktif!',
+                            text: 'Perangkat Anda siap menerima pengingat otomatis.',
+                            showConfirmButton: false,
+                            timer: 3500,
+                            timerProgressBar: true,
+                            background: '#ffffff',
+                            color: '#0f172a',
+                            customClass: {
+                                popup: 'rounded-2xl shadow-lg border border-slate-100'
+                            },
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer)
+                                toast.addEventListener('mouseleave', Swal.resumeTimer)
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal Menyimpan',
+                            text: 'Gagal menyimpan langganan notifikasi ke server database.',
+                            confirmButtonColor: '#0f172a'
+                        });
+                    }
                 } catch (error) {
-                    console.error("Notifikasi error:", error);
-                    setErrorState();
+                    console.error('Error saat mengaktifkan notifikasi:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Terjadi kesalahan sistem: ' + error.message,
+                        confirmButtonColor: '#0f172a'
+                    });
                 }
             });
-
-            function setSuccessState() {
-                btnNotify.className = "mt-2 w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-green-500 text-white font-semibold text-sm py-2.5 px-4 rounded-xl shadow cursor-default transition-all duration-300";
-                btnText.innerText = 'Notifikasi Aktif';
-                btnIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>';
-            }
-
-            function setErrorState() {
-                btnNotify.className = "mt-2 w-full flex items-center justify-center gap-2 bg-gradient-to-r from-red-500 to-rose-500 text-white font-semibold text-sm py-2.5 px-4 rounded-xl shadow transition-all duration-300";
-                btnText.innerText = 'Izin Ditolak';
-                btnIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>';
-            }
         });
-    </script>
+        </script>
 </x-app-layout>
