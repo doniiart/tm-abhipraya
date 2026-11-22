@@ -68,8 +68,8 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     </div>
                     <div class="text-xs font-bold tracking-widest text-slate-400 uppercase mb-1">Tahun Berdiri</div>
-                    <p class="text-xl font-bold text-slate-900 mt-1">
-                        {{ $settings->tahun_berdiri}}
+                    <p class="text-lg font-bold text-slate-900 mt-1 leading-snug">
+                        Turun Temurun Sejak Lama
                     </p>
                     <div class="text-xs text-slate-500 mt-1">Terus berkembang hingga saat ini</div>
                 </div>
@@ -81,7 +81,7 @@
                     </div>
                     <div class="text-xs font-bold tracking-widest text-slate-400 uppercase mb-1 group-hover:text-blue-500 transition-colors">Pusat Kesekretariatan</div>
                     <div class="text-sm font-extrabold text-slate-800 leading-snug">Dk. Candi Rejo & Gunung Rejo</div>
-                    <div class="text-xs text-slate-500 mt-1">RT 23 & RT 24, Wonosari, Klaten</div>
+                    <div class="text-xs text-slate-500 mt-1">RT 23 & RT 24, Jelobo, Wonosari, Klaten</div>
                 </a>
 
                 <!-- Info Jumlah Anggota (Sekarang Bisa Diklik) -->
